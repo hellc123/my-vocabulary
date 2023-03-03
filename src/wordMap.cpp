@@ -13,7 +13,7 @@ int wordMap::insert(std::string word)
 	return 0;
 }
 
-std::ostringstream& wordMap::output(std::ostringstream& out)
+std::ostringstream& wordMap::output()
 {
 	out << "Total words number: " << _wordMap.size() << std::endl;
 	for (auto word : _wordMap)

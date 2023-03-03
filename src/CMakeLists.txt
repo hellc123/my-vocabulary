@@ -1,4 +1,4 @@
-add_executable(my_vocabulary "main.cpp" "word.h" "word.cpp" "wordMap.h" "wordMap.cpp")
+add_executable(my_vocabulary "main.cpp" "word.h" "word.cpp" "wordMap.h" "wordMap.cpp" "wordProcess.h")
 
 #用于提高警告等级
 if(MSVC)
