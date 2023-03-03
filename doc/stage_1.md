@@ -20,7 +20,12 @@
 ## 实现思路
 - 定义程序处理的对象为类
     - 词 `word` 类`
-    - 
+    - 单词处理 `wordProcess` 类
+    - 存储和计数词图 `wordMap` 类
+    - 文件IO`fileIO` 类
 - 使用C++ STL中的容器和算法
-    - 用String 表示字符串 和单词
-    - 
+    - 用string 表示字符串 和单词
+    - 用map来进行去重，排序和统计数量 
+- 框架
+    - fileI->wordProcess->word->wordMap->sstream->fileO
+
