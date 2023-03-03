@@ -28,4 +28,4 @@
     - 用map来进行去重，排序和统计数量 
 - 框架
     - fileI->wordProcess->word->wordMap->sstream->fileO
-
+    -fileI 类从一个文件流中读取内容到一个字符串流中

@@ -15,7 +15,7 @@ public:
 	//插入一个单词，返回其现有的个数
 	int insert(std::string word);
 	//输出到字符串流
-	std::ostringstream& output(std::ostringstream& out);
+	std::ostringstream& output();
 };
 
 

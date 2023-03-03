@@ -1,15 +1,10 @@
 #include<iostream>
 #include<map>
 #include<string>
-int main()
+int main(int argc, char* argv[])
 {
-	std::cout << "Hello World!" << std::endl;
-	std::map<std::string, int> wmap;
-	wmap.insert(std::pair<std::string, int>("bone1", 1));
-	wmap.insert(std::pair<std::string, int>("aone1", 2));
-	std::cout << (wmap.begin()->first) << std::endl;
-	std::cout << ((++wmap.begin())->first) << std::endl;
-
-
+	for (int i = 0; i < argc; i++)
+		std::cout << argv[i] << std::endl;
+	system("pause");
 	return 0;
 }
