@@ -20,6 +20,22 @@ int main(int argc, char* argv[])
 	//	std::cout << "NULL\n";
 	//}
 
+	for (int i = 1; i < argc; i++)
+	{
+		fileI fin(argv[i]);
+		auto buff = fin.toSStream();
+		if (buff)
+		{
+			wordMap wmap;
+			wordProcess(*buff, wmap);
+			fileO fout(argv[i], wmap.output());
+		}
+		else
+		{
+			std::cout << "NULL\n";
+		}
+	}
+
 	//system("pause");
 	return 0;
 }

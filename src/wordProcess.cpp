@@ -9,11 +9,6 @@ wordProcess::wordProcess(std::stringstream& in, wordMap& out)
 		{
 			continue;
 		}
-		else if (word[0] == '-')
-		{
-			word = word.substr(word.find_last_of('-') + 1);
-		}
-
 		out.insert(word);
 	}
 }
@@ -38,6 +33,14 @@ std::string wordProcess::readWord(std::stringstream& in)
 		else
 		{
 			break;
+		}
+		if (word[0] == '-')
+		{
+			word = word.substr(word.find_last_of('-') + 1);
+			for (auto& i : word)
+			{
+				i = tolower(i);
+			}
 		}
 	}
 	return word;
