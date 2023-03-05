@@ -8,17 +8,18 @@ int wordMap::insert(std::string word)
 		_wordMap.insert(std::pair<std::string, int>(word, 1));
 	else
 	{
-		_wordMap.insert(std::pair<std::string, int>(word, temp->second + 1));
+		//_wordMap.insert(std::pair<std::string, int>(word, temp->second + 1));
+		_wordMap[word]++;
 	}
 	return 0;
 }
 
 std::ostringstream& wordMap::output()
 {
-	out << "Total words number: " << _wordMap.size() << std::endl;
+	out << "Total words number," << _wordMap.size() << std::endl;
 	for (auto word : _wordMap)
 	{
-		out << word.first << "\t" << word.second << std::endl;
+		out << word.first << "," << word.second << std::endl;
 	}
 	return out;
 }

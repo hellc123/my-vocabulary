@@ -27,5 +27,8 @@
     - 用string 表示字符串 和单词
     - 用map来进行去重，排序和统计数量 
 - 框架
-    - fileI->wordProcess->word->wordMap->sstream->fileO
-    -fileI 类从一个文件流中读取内容到一个字符串流中
+    - fileI->stringstream->wordProcess->word->wordMap->fileO
+    - fileI 类从一个文件流中读取内容到一个字符串流stringstream中
+    - wordProcess 从stringstream中内容进行语言处理，导出word类
+    - 将word打包到wordMap数据结构中，从而进行统计，去重等工作
+    - 通过fileO提供的接口，将输入存到文件中
