@@ -1,13 +1,15 @@
+# qt compile environment
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
 set(PROJECT_SOURCES
         main.cpp
-        word.h word.cpp
-        wordProcess.h wordProcess.cpp
-        fileIO.h fileIO.cpp
+        # word.h word.cpp
+        # wordProcess.h wordProcess.cpp
+        # fileIO.h fileIO.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
