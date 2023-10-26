@@ -1,3 +1,19 @@
 cmake_minimum_required(VERSION 3.18)
-project(my_vocabulary CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(my_vocabulary VERSION 0.1 LANGUAGES CXX)
 add_subdirectory(src out)
+
+
+
+# find_package(Qt6 REQUIRED COMPONENTS OpenGL)
+
+
+
