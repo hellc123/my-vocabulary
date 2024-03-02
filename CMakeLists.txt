@@ -7,10 +7,11 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(PROJECT_NAME my_vocabulary)
 
-project(my_vocabulary VERSION 0.1 LANGUAGES CXX)
+project(${PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
+
 add_subdirectory(src out)
-
 
 
 # find_package(Qt6 REQUIRED COMPONENTS OpenGL)

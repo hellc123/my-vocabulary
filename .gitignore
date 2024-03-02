@@ -40,10 +40,22 @@ cmake.check_cache
 *.cmake
 *.log
 *.marks
+CMakeLists.txt.user
 CMakeFiles
 
 #Building
 out
 
+#webpage 
+*.html
+*.css
+*.js
+
 #backup files
 *.cfg
+
+#dictory files
+dict
+
+#temporary files
+tem

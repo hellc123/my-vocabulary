@@ -2,26 +2,33 @@
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+#find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+#find_package(Qt6 REQUIRED COMPONENTS  Core Gui  WebEngineWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets)
+#find_package(Qt6 REQUIRED COMPONENTS WebEngineWidgets)
 
 set(PROJECT_SOURCES
         main.cpp
+        mainwindow.h mainwindow.cpp
+        webview.h webview.cpp
         # word.h word.cpp
         # wordProcess.h wordProcess.cpp
         # fileIO.h fileIO.cpp
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(my_vocabulary
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-endif()
-target_link_libraries(my_vocabulary PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+qt_add_executable(${PROJECT_NAME}
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
+)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt::Core
+    Qt::Gui
+    Qt::WebEngineWidgets
+)
 
 
-set_target_properties(my_vocabulary PROPERTIES
+set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -31,13 +38,13 @@ set_target_properties(my_vocabulary PROPERTIES
 
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(my_vocabulary)
+    qt_finalize_executable(${PROJECT_NAME})
 endif()
 
 #用于提高警告等级
 if(MSVC)
-  target_compile_options(my_vocabulary PRIVATE /W4 )
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4 )
 else()
-  target_compile_options(my_vocabulary PRIVATE -Wall -Wextra )
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra )
   #-Wpedantic -Werror)
 endif()
