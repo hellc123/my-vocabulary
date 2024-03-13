@@ -11,7 +11,8 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.h mainwindow.cpp
         webview.h webview.cpp
-        # word.h word.cpp
+        word.h word.cpp
+        myschemehandler.h myschemehandler.cpp
         # wordProcess.h wordProcess.cpp
         # fileIO.h fileIO.cpp
 )

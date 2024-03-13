@@ -2,7 +2,7 @@
 #define WEBVIEW_H
 
 #include <QWebEngineView>
-
+#include <QWebEngineProfile>
 class WebView : public QWebEngineView
 {
     Q_OBJECT
