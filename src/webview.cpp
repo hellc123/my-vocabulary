@@ -3,7 +3,7 @@
 WebView::WebView(QWidget *parent)
     : QWebEngineView{parent}
 {
-    setAttribute( Qt::WA_NativeWindow, true );
+    //setAttribute( Qt::WA_NativeWindow, true );
     QWebEngineSettings * setting = settings();
     setting->setUnknownUrlSchemePolicy( QWebEngineSettings::UnknownUrlSchemePolicy::DisallowUnknownUrlSchemes );
     setting->setAttribute( QWebEngineSettings::LocalContentCanAccessRemoteUrls, true );

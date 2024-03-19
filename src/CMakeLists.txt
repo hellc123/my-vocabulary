@@ -16,6 +16,7 @@ set(PROJECT_SOURCES
         databasemanager.h databasemanager.cpp
         wordprocess.h wordprocess.cpp
         articlemaker.h articlemaker.cpp
+        articlepad.h articlepad.cpp
 )
 
 

@@ -5,14 +5,31 @@
 #include "webview.h"
 #include "databasemanager.h"
 #include "articlemaker.h"
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QFrame>
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    // 网页检查器
     QWebEngineView *inspector;
+
+    // 中央widget
+    QWidget *centralArea;
+    // 中心的横向布局
+    QHBoxLayout * centralAreaLayout;
+
+    // 一个 书写栏，和一个webview，
+    QWidget *translateArea;
     WebView *view;
+    QLineEdit *translateLine;
+    QVBoxLayout * translateAreaLayout;
+
+
     void showInpector(bool);
 
 private:

@@ -8,7 +8,7 @@
 #include "databasemanager.h"
 #include <QVector>
 #include "word.h"
-
+#include <QOpenGLContext>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent},
       dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
@@ -22,12 +22,37 @@ MainWindow::MainWindow(QWidget *parent)
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("img", handler);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("entry", handler);
 
+    // 中央widget
+    centralArea = new QWidget(this);
+    centralArea->setContentsMargins(0,0,0,0);
+    setCentralWidget(centralArea);
+    centralAreaLayout = new QHBoxLayout();
+    centralArea->setLayout(centralAreaLayout);
+    centralAreaLayout->setContentsMargins(0,0,0,0);
+
+    // 查词和显示释义部分
+    translateArea = new QWidget(this);
+    translateLine = new QLineEdit();
     view = new WebView();
 
+    translateAreaLayout = new QVBoxLayout();
+    translateArea->setLayout(translateAreaLayout);
+    translateAreaLayout->addWidget(translateLine);
+    translateAreaLayout->addWidget(view);
+
+    centralAreaLayout->addWidget(translateArea);
+    // 按下Enter键和Return键之后，进行搜索
+    connect(translateLine, &QLineEdit::returnPressed, this,
+               [=](){view->load(QUrl(QString(R"(entry://)")+translateLine->text().trimmed()));});
+
+
+    // 检测网页
     inspector = new QWebEngineView();
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
-    view->load(QUrl(R"(entry://AC)"));
-    setCentralWidget(view);
+
+    // 初始查询单词
+    view->load(QUrl(R"(entry://hello)"));
+
     resize(800,400);
 }
 

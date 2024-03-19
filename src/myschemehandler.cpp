@@ -48,7 +48,7 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
         if(fileType.isEmpty()) {
             qDebug() << host;
             articleMaker.searchWord(host);
-            qDebug()<< articleMaker.getHtml();
+            //qDebug()<< articleMaker.getHtml();
             ba->append(articleMaker.getHtml().toUtf8());
             buffer->open(QBuffer::ReadOnly);
             buffer->seek(0);
@@ -98,6 +98,17 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
             job->reply(QByteArrayLiteral("font/ttf"), buffer);
             delete file;
         }
+        if (fileType == "png"){
+            //qDebug() << "png";
+            QFile *file = new QFile(fileAddressPrefix+"am\\"+filename);
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("image/png"), buffer);
+            delete file;
+        }
         return;
     }
     if (url.scheme() == "sound"){
@@ -110,16 +121,5 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
         buffer->open(QBuffer::ReadOnly);
         buffer->seek(0);
         job->reply(QByteArrayLiteral("audio/mpeg"), buffer);
-    }
-    if (fileType == "png"){
-        //qDebug() << "png";
-        QFile *file = new QFile(fileAddressPrefix+"am\\"+filename);
-        file->open(QFile::ReadOnly);
-        ba->append(file->readAll());
-        file->close();
-        buffer->open(QBuffer::ReadOnly);
-        buffer->seek(0);
-        job->reply(QByteArrayLiteral("image/png"), buffer);
-        delete file;
     }
 }
