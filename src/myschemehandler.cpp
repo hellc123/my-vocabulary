@@ -26,7 +26,7 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     QString fileType;
     QString filename = url.path();
     if(filename != "/") {
-        filename = filename.mid(1);
+        filename = filename.mid(filename.lastIndexOf('/'));
         fileType = filename.split('.')[1];
     }
 
@@ -45,39 +45,85 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     } );
 
     if(url.scheme() == "entry") {
-        QFile *file = new QFile(fileAddressPrefix+host+".html");
-        file->open(QFile::ReadOnly);
-        ba->append(file->readAll());
-        file->close();
-        buffer->open(QBuffer::ReadOnly);
-        buffer->seek(0);
-        job->reply(QByteArrayLiteral("text/html"), buffer);
-        delete file;
+        if(fileType.isEmpty()) {
+            QFile *file = new QFile(fileAddressPrefix+host+".html");
+            qDebug() << fileAddressPrefix+host+".html";
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("text/html"), buffer);
+            delete file;
+        }
+        qDebug() << filename;
+        if(fileType == "css") {
+            QFile *file = new QFile(fileAddressPrefix+filename);
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("text/css"), buffer);
+            delete file;
+        }
+        if(fileType == "js") {
+            QFile *file = new QFile(fileAddressPrefix+filename);
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("text/javascript"), buffer);
+            delete file;
+        }
+        if (fileType == "svg"){
+            QFile *file = new QFile(fileAddressPrefix+filename);
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("image/svg+xml"), buffer);
+            delete file;
+        }
+        if (fileType == "ttf"){
+            qDebug() << filename;
+            QFile *file = new QFile(fileAddressPrefix+"font/"+filename);
+            qDebug() << fileAddressPrefix+filename;
+            file->open(QFile::ReadOnly);
+            ba->append(file->readAll());
+            file->close();
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("font/ttf"), buffer);
+            delete file;
+        }
         return;
     }
 
-    if (fileType == "css"){
-        //qDebug() << "css";
-        QFile *file = new QFile(fileAddressPrefix+filename);
-        file->open(QFile::ReadOnly);
-        ba->append(file->readAll());
-        file->close();
-        buffer->open(QBuffer::ReadOnly);
-        buffer->seek(0);
-        job->reply(QByteArrayLiteral("text/css"), buffer);
-        delete file;
-    }
-    if (fileType == "js"){
-        //qDebug() << "js";
-        QFile *file = new QFile(fileAddressPrefix+filename);
-        file->open(QFile::ReadOnly);
-        ba->append(file->readAll());
-        file->close();
-        buffer->open(QBuffer::ReadOnly);
-        buffer->seek(0);
-        job->reply(QByteArrayLiteral("text/javascript"), buffer);
-        delete file;
-    }
+//    if (fileType == "css"){
+//        //qDebug() << "css";
+//        QFile *file = new QFile(fileAddressPrefix+filename);
+//        file->open(QFile::ReadOnly);
+//        ba->append(file->readAll());
+//        file->close();
+//        buffer->open(QBuffer::ReadOnly);
+//        buffer->seek(0);
+//        job->reply(QByteArrayLiteral("text/css"), buffer);
+//        delete file;
+//    }
+//    if (fileType == "js"){
+//        //qDebug() << "js";
+//        QFile *file = new QFile(fileAddressPrefix+filename);
+//        file->open(QFile::ReadOnly);
+//        ba->append(file->readAll());
+//        file->close();
+//        buffer->open(QBuffer::ReadOnly);
+//        buffer->seek(0);
+//        job->reply(QByteArrayLiteral("text/javascript"), buffer);
+//        delete file;
+//    }
     if (url.scheme() == "sound"){
         //qDebug() << "mp3";
         QFile *file = new QFile(fileAddressPrefix+"sound\\"+host);
@@ -103,16 +149,16 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
 
     // 处理字体
     //bres://localhost/font/Optima_LT_Medium_Italic.ttf
-    if (fileType == "ttf"){
-        //qDebug() << "ttf";
-        QFile *file = new QFile(fileAddressPrefix+filename);
-        qDebug() << fileAddressPrefix+filename;
-        file->open(QFile::ReadOnly);
-        ba->append(file->readAll());
-        file->close();
-        buffer->open(QBuffer::ReadOnly);
-        buffer->seek(0);
-        job->reply(QByteArrayLiteral("font/ttf"), buffer);
-        delete file;
-    }
+//    if (fileType == "ttf"){
+//        //qDebug() << "ttf";
+//        QFile *file = new QFile(fileAddressPrefix+filename);
+//        qDebug() << fileAddressPrefix+filename;
+//        file->open(QFile::ReadOnly);
+//        ba->append(file->readAll());
+//        file->close();
+//        buffer->open(QBuffer::ReadOnly);
+//        buffer->seek(0);
+//        job->reply(QByteArrayLiteral("font/ttf"), buffer);
+//        delete file;
+//    }
 }

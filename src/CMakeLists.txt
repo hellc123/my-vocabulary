@@ -4,7 +4,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 #find_package(Qt6 REQUIRED COMPONENTS  Core Gui  WebEngineWidgets)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets Sql)
 #find_package(Qt6 REQUIRED COMPONENTS WebEngineWidgets)
 
 set(PROJECT_SOURCES
@@ -13,8 +13,8 @@ set(PROJECT_SOURCES
         webview.h webview.cpp
         word.h word.cpp
         myschemehandler.h myschemehandler.cpp
-        # wordProcess.h wordProcess.cpp
-        # fileIO.h fileIO.cpp
+        databasemanager.h databasemanager.cpp
+        wordprocess.h wordprocess.cpp
 )
 
 
@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt::Core
     Qt::Gui
     Qt::WebEngineWidgets
+    Qt6::Sql
 )
 
 

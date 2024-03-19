@@ -5,6 +5,7 @@
 #include <QWidget>
 #include "myschemehandler.h"
 #include <QCloseEvent>
+#include "databasemanager.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
 {
@@ -21,9 +22,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
-    view->load(QUrl(R"(entry://animal)"));
+    //view->load(QUrl(R"(entry://another)"));
 
-    setCentralWidget(view);
+    // to test database
+    //setCentralWidget(view);
+    QString dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)");
+    DatabaseManager db(dbAddress);
+    //QString ductAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\牛津高阶英汉双解词典(第9版).html)");
+    //db.initDictionary(ductAddress);
     resize(800,400);
 }
 
@@ -50,4 +56,5 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     event->accept();
     appQuit();
+
 }

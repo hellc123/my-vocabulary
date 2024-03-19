@@ -3,13 +3,12 @@
 #include <QWebEngineUrlScheme>
 #include "mainwindow.h"
 #include "myschemehandler.h"
+#include <QObject>
 int main(int argc, char* argv[])
 {
-
-    // 需要自定义三个scheme
     QStringList myScheme = {"bres", "sound", "img", "entry"};
 
-    for (auto schemeName : myScheme ) {
+    for (const auto &schemeName : myScheme ) {
         QWebEngineUrlScheme scheme(schemeName.toLatin1());
         // 只需要host
         scheme.setSyntax(QWebEngineUrlScheme::Syntax::Host);
@@ -20,7 +19,6 @@ int main(int argc, char* argv[])
         // 注册scheme
         QWebEngineUrlScheme::registerScheme(scheme);
     }
-
     QApplication app(argc, argv);
     MainWindow mainwindow;
     mainwindow.show();
