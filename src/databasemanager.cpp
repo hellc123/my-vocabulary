@@ -25,12 +25,16 @@ bool DatabaseManager::isOpen() const
     return db.isOpen();
 }
 
-bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words)
+bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) const
 {
     // 执行查询
     QSqlQuery query;
-    if(!searchWord.word.isEmpty())
-        query.prepare(QString("SELECT html FROM dictionaryTable WHERE word=%1").arg(searchWord.word));
+    if(!searchWord.word.isEmpty()) {
+        QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
+        sqlQuery = sqlQuery.arg("\"" + searchWord.word + "\"");
+        query.prepare(sqlQuery);
+        qDebug() << sqlQuery;
+    }
     if (!query.exec()) {
         qDebug() << "Error: Failed to execute query.";
         return false;
@@ -41,7 +45,7 @@ bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words)
     // 处理查询结果
     while (query.next()) {
         // 获取查询结果中的字段值
-        tem.html = query.value(0).toString();
+        tem.html = query.value(0).toString().trimmed();
         Words.push_back(tem);
     }
     return true;

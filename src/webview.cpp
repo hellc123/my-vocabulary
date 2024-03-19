@@ -4,8 +4,6 @@ WebView::WebView(QWidget *parent)
     : QWebEngineView{parent}
 {
     setAttribute( Qt::WA_NativeWindow, true );
-
-
     QWebEngineSettings * setting = settings();
     setting->setUnknownUrlSchemePolicy( QWebEngineSettings::UnknownUrlSchemePolicy::DisallowUnknownUrlSchemes );
     setting->setAttribute( QWebEngineSettings::LocalContentCanAccessRemoteUrls, true );
@@ -15,5 +13,4 @@ WebView::WebView(QWidget *parent)
     setting->setAttribute( QWebEngineSettings::PlaybackRequiresUserGesture, false );
     setting->setAttribute( QWebEngineSettings::JavascriptCanAccessClipboard, true );
     setting->setAttribute( QWebEngineSettings::PrintElementBackgrounds, false );
-
 }

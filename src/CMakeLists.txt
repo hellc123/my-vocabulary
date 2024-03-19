@@ -15,6 +15,7 @@ set(PROJECT_SOURCES
         myschemehandler.h myschemehandler.cpp
         databasemanager.h databasemanager.cpp
         wordprocess.h wordprocess.cpp
+        articlemaker.h articlemaker.cpp
 )
 
 

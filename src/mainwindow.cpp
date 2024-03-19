@@ -6,30 +6,28 @@
 #include "myschemehandler.h"
 #include <QCloseEvent>
 #include "databasemanager.h"
+#include <QVector>
+#include "word.h"
+
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow{parent}
+    : QMainWindow{parent},
+      dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
+      dictDatabase(dbAddress),
+      articleMaker(dictDatabase)
 {
     // 安装 scheme handler
-    MySchemeHandler *handler = new MySchemeHandler(this);
+    MySchemeHandler *handler = new MySchemeHandler(this, articleMaker);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("bres", handler);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("sound", handler);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("img", handler);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("entry", handler);
 
-
     view = new WebView();
+
     inspector = new QWebEngineView();
-
-
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
-    //view->load(QUrl(R"(entry://another)"));
-
-    // to test database
-    //setCentralWidget(view);
-    QString dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)");
-    DatabaseManager db(dbAddress);
-    //QString ductAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\牛津高阶英汉双解词典(第9版).html)");
-    //db.initDictionary(ductAddress);
+    view->load(QUrl(R"(entry://AC)"));
+    setCentralWidget(view);
     resize(800,400);
 }
 

@@ -6,23 +6,23 @@
 #include <QDebug>
 #include <QNetworkReply>
 #include <QBuffer>
-MySchemeHandler::MySchemeHandler(QObject *parent)
-    : QWebEngineUrlSchemeHandler{parent}
+
+MySchemeHandler::MySchemeHandler(QObject *parent, ArticleMaker& articleMaker)
+    : QWebEngineUrlSchemeHandler{parent},
+      articleMaker(articleMaker)
 {
 
 }
 
 void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
 {
-    // request的类型
-    //const QByteArray method = job->requestMethod();
-    // url
+    // 获取请求的url
     const QUrl url = job->requestUrl();
-
+    qDebug() << url.toDisplayString();
 
     // path 会带一个 '/'
-
-    QString host = url.host();
+    // 要获得原始的url
+    QString host = url.host(QUrl::DecodeReserved);
     QString fileType;
     QString filename = url.path();
     if(filename != "/") {
@@ -46,15 +46,14 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
 
     if(url.scheme() == "entry") {
         if(fileType.isEmpty()) {
-            QFile *file = new QFile(fileAddressPrefix+host+".html");
-            qDebug() << fileAddressPrefix+host+".html";
-            file->open(QFile::ReadOnly);
-            ba->append(file->readAll());
-            file->close();
+            qDebug() << host;
+            articleMaker.searchWord(host);
+            qDebug()<< articleMaker.getHtml();
+            ba->append(articleMaker.getHtml().toUtf8());
             buffer->open(QBuffer::ReadOnly);
             buffer->seek(0);
             job->reply(QByteArrayLiteral("text/html"), buffer);
-            delete file;
+            // 从数据库中获得html
         }
         qDebug() << filename;
         if(fileType == "css") {
@@ -101,29 +100,6 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
         }
         return;
     }
-
-//    if (fileType == "css"){
-//        //qDebug() << "css";
-//        QFile *file = new QFile(fileAddressPrefix+filename);
-//        file->open(QFile::ReadOnly);
-//        ba->append(file->readAll());
-//        file->close();
-//        buffer->open(QBuffer::ReadOnly);
-//        buffer->seek(0);
-//        job->reply(QByteArrayLiteral("text/css"), buffer);
-//        delete file;
-//    }
-//    if (fileType == "js"){
-//        //qDebug() << "js";
-//        QFile *file = new QFile(fileAddressPrefix+filename);
-//        file->open(QFile::ReadOnly);
-//        ba->append(file->readAll());
-//        file->close();
-//        buffer->open(QBuffer::ReadOnly);
-//        buffer->seek(0);
-//        job->reply(QByteArrayLiteral("text/javascript"), buffer);
-//        delete file;
-//    }
     if (url.scheme() == "sound"){
         //qDebug() << "mp3";
         QFile *file = new QFile(fileAddressPrefix+"sound\\"+host);
@@ -146,19 +122,4 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
         job->reply(QByteArrayLiteral("image/png"), buffer);
         delete file;
     }
-
-    // 处理字体
-    //bres://localhost/font/Optima_LT_Medium_Italic.ttf
-//    if (fileType == "ttf"){
-//        //qDebug() << "ttf";
-//        QFile *file = new QFile(fileAddressPrefix+filename);
-//        qDebug() << fileAddressPrefix+filename;
-//        file->open(QFile::ReadOnly);
-//        ba->append(file->readAll());
-//        file->close();
-//        buffer->open(QBuffer::ReadOnly);
-//        buffer->seek(0);
-//        job->reply(QByteArrayLiteral("font/ttf"), buffer);
-//        delete file;
-//    }
 }

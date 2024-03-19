@@ -16,7 +16,7 @@ public:
     DatabaseManager(const QString &path);
     ~DatabaseManager();
     bool isOpen() const;
-    bool searchWord(const Word & searchWord,QVector<Word> & Words);
+    bool searchWord(const Word & searchWord,QVector<Word> & Words) const;
 private:
     QSqlDatabase db;
     // 创建词典数据库
