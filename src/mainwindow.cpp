@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
 
     // 初始查询单词
-    view->load(QUrl(R"(entry://hello)"));
+    view->load(QUrl(R"(entry://done)"));
 
     resize(800,400);
 }

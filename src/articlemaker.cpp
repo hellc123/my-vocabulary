@@ -1,6 +1,7 @@
 #include "articlemaker.h"
 #include "word.h"
 #include <QVector>
+#include <QSet>
 ArticleMaker::ArticleMaker(const DatabaseManager &db):
     _db(db)
 {
@@ -34,25 +35,53 @@ bool ArticleMaker::searchWord(const QString &word)
 
     QString body;
     // 遍历所有html
+    // 把 _word 和 @@@LINK=LINKWORD 都放到一个set里面，从而避免循环连接
+    QSet<QString> searchedWords;
+    searchedWords.insert(_word);
     for (auto begin = searchWords.begin(),end = searchWords.end();
          begin != end;) {
+        // 为了便于debug，打印QVector<Word> searchWords的所有元素
+        qDebug() << "begin";
+        for (const auto & w :searchWords) {
+            qDebug() << w.word;
+        }
+
+
         if(begin->html.first(8)=="@@@LINK=") {
             //继续搜索LINK后对应的单词
             Word newWord(begin->html.mid(8));
-            // 搜索新的单词，并将其放到begin的后面
-            // 由于QVector本质上就是QList，所有随机插入开销不大
-            QVector<Word> newSearchWords;
-            _db.searchWord(newWord,newSearchWords);
-            // 把原来的删除
-            searchWords.erase(begin);
-            for (const auto & newSearchWord : newSearchWords) {
-                searchWords.prepend(newSearchWord);
+            // 判断是否已经被搜索过了
+            if (!searchedWords.contains(newWord.word)) {
+                // 搜索新的单词，并将其放到begin的后面
+                // 由于QVector本质上就是QList，所有随机插入开销不大
+                QVector<Word> newSearchWords;
+                _db.searchWord(newWord,newSearchWords);
+
+                // 把原来的删除
+                searchWords.erase(begin);
+                // 将新的结果，保留其顺序，放到前面
+                searchWords = newSearchWords + searchWords;
+                //for (const auto & newSearchWord : newSearchWords) {
+                //    searchWords.insert(begin, newSearchWord);
+                //}
+
+                begin = searchWords.begin();
+                end = searchWords.end();
+                searchedWords.insert(newWord.word);
+            } else {
+                // 如果已经被搜索过了，那就跳过
+                searchWords.erase(begin);
+                begin=searchWords.begin();
+                end = searchWords.end();
             }
-            begin = searchWords.begin();
+
         } else {
             // 这是一个完成的单词html
             body += (begin->html + "\n");
-            searchWords.erase(begin++);
+            //searchWords.erase(begin++);
+            searchWords.erase(begin);
+            begin=searchWords.begin();
+            end = searchWords.end();
         }
     }
     // 加上头部
