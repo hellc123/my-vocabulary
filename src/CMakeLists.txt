@@ -17,6 +17,8 @@ set(PROJECT_SOURCES
         wordprocess.h wordprocess.cpp
         articlemaker.h articlemaker.cpp
         articlepad.h articlepad.cpp
+        vacabularytest.h vacabularytest.cpp
+        resource.qrc
 )
 
 

@@ -29,6 +29,11 @@ MainWindow::MainWindow(QWidget *parent)
     centralAreaLayout = new QHBoxLayout();
     centralArea->setLayout(centralAreaLayout);
     centralAreaLayout->setContentsMargins(0,0,0,0);
+    centralAreaLayout->setSpacing(1);
+
+    // 文本编辑器和单词列表部分
+    articlePad = new ArticlePad();
+    centralAreaLayout->addWidget(articlePad, 9);
 
     // 查词和显示释义部分
     translateArea = new QWidget(this);
@@ -40,20 +45,21 @@ MainWindow::MainWindow(QWidget *parent)
     translateAreaLayout->addWidget(translateLine);
     translateAreaLayout->addWidget(view);
 
-    centralAreaLayout->addWidget(translateArea);
+    centralAreaLayout->addWidget(translateArea, 10);
     // 按下Enter键和Return键之后，进行搜索
     connect(translateLine, &QLineEdit::returnPressed, this,
                [=](){view->load(QUrl(QString(R"(entry://)")+translateLine->text().trimmed()));});
 
-
+    // 点击 word list 里的单词，查询这个单词
+    connect(articlePad, &ArticlePad::articlePadSearchWord, this, &MainWindow::loadWord);
     // 检测网页
     inspector = new QWebEngineView();
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
 
     // 初始查询单词
-    view->load(QUrl(R"(entry://done)"));
+    loadWord("welcome");
 
-    resize(800,400);
+    resize(1000,600);
 }
 
 MainWindow::~MainWindow()
@@ -65,6 +71,12 @@ void MainWindow::showInpector(bool)
 {
     inspector->page()->setInspectedPage( view->page() );
     inspector->show();
+}
+
+void MainWindow::loadWord(const QString &word)
+{
+    view->load(QUrl(QString(R"(entry://)")+word.trimmed()));
+    translateLine->setText(word.trimmed());
 }
 
 void MainWindow::appQuit()

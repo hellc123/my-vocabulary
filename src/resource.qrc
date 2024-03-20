@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../res/audioPlay.js</file>
+        <file>../res/vocabulary.xml</file>
+    </qresource>
+</RCC>

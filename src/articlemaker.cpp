@@ -41,10 +41,10 @@ bool ArticleMaker::searchWord(const QString &word)
     for (auto begin = searchWords.begin(),end = searchWords.end();
          begin != end;) {
         // 为了便于debug，打印QVector<Word> searchWords的所有元素
-        qDebug() << "begin";
-        for (const auto & w :searchWords) {
-            qDebug() << w.word;
-        }
+//        qDebug() << "begin";
+//        for (const auto & w :searchWords) {
+//            qDebug() << w.word;
+//        }
 
 
         if(begin->html.first(8)=="@@@LINK=") {
@@ -90,7 +90,7 @@ bool ArticleMaker::searchWord(const QString &word)
 <html>
 <title>animal</title>
 <head>
-    <script src="myJavascript.js" charset="utf-8" type="text/javascript" language="javascript"></script>
+    <script src="qrc://../res/audioPlay.js" charset="utf-8" type="text/javascript" language="javascript"></script>
 </head>
 <audio id="audioPlayer" controls style="display: none;">
     Your browser does not support the audio element.

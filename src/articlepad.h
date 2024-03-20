@@ -7,6 +7,11 @@
 #include <QAbstractItemView>
 #include <QList>
 #include <QListView>
+#include <QTextEdit>
+#include <QCursor>
+#include <QHBoxLayout>
+#include <QRegularExpression>
+#include <QSet>
 // model
 // 1、一个纯文本写字栏
 // 2、对这个写字栏中的文本进行分词
@@ -27,8 +32,13 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    void copyFormSet(const QSet<QString> & wordSet);
+    WordListModel& push_word(const QString & word);
+    void remove_word(unsigned int i);
+    void clear();
 private slots:
-    void historyChanged();
+    // 使用这个方法来更新view的数据
+    void dataChanged();
 
 private:
     // 存放一个个单词
@@ -45,9 +55,20 @@ class ArticlePad : public QWidget
 public:
     explicit ArticlePad(QWidget *parent = nullptr);
 private:
-    QListView wordListView;
+    // 横向布局
+    QHBoxLayout * articlePadLayout;
+    // 写字板
+    QTextEdit *articleEdit;
+    // 用来显示单词列表
+    QListView *wordListView;
+    // 用来存储单词数据
     WordListModel wordListModel;
+
+    // 分词
+    bool tokenizer(QString article);
+    void clickWord(const QModelIndex &index);
 signals:
+    void articlePadSearchWord(QString word);
 
 };
 

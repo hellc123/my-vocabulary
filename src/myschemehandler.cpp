@@ -67,6 +67,7 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
             delete file;
         }
         if(fileType == "js") {
+
             QFile *file = new QFile(fileAddressPrefix+filename);
             file->open(QFile::ReadOnly);
             ba->append(file->readAll());

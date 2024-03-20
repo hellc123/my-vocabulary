@@ -9,6 +9,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFrame>
+#include "articlepad.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +24,9 @@ public:
     // 中心的横向布局
     QHBoxLayout * centralAreaLayout;
 
+    // 文本编辑框和单词列表
+    ArticlePad * articlePad;
+
     // 一个 书写栏，和一个webview，
     QWidget *translateArea;
     WebView *view;
@@ -31,6 +35,7 @@ public:
 
 
     void showInpector(bool);
+    void loadWord(const QString & word);
 
 private:
     // 定义窗口退出时的动作
