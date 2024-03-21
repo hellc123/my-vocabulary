@@ -4,7 +4,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 #find_package(Qt6 REQUIRED COMPONENTS  Core Gui  WebEngineWidgets)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets Sql Xml)
 #find_package(Qt6 REQUIRED COMPONENTS WebEngineWidgets)
 
 set(PROJECT_SOURCES
@@ -17,7 +17,7 @@ set(PROJECT_SOURCES
         wordprocess.h wordprocess.cpp
         articlemaker.h articlemaker.cpp
         articlepad.h articlepad.cpp
-        vacabularytest.h vacabularytest.cpp
+        vocabularytest.h vocabularytest.cpp
         resource.qrc
 )
 
@@ -31,6 +31,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt::Gui
     Qt::WebEngineWidgets
     Qt6::Sql
+    Qt6::Xml
 )
 
 

@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include "articlepad.h"
+#include "vocabularytest.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

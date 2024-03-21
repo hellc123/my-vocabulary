@@ -59,6 +59,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 初始查询单词
     loadWord("welcome");
 
+    VocabularyTest *test = new VocabularyTest();
+    test ->show();
+
     resize(1000,600);
 }
 

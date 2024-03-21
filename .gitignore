@@ -49,7 +49,6 @@ out
 #webpage 
 *.html
 *.css
-*.js
 
 #backup files
 *.cfg

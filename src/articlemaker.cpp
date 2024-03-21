@@ -47,11 +47,11 @@ bool ArticleMaker::searchWord(const QString &word)
 //        }
 
 
-        if(begin->html.first(8)=="@@@LINK=") {
+        if(begin->getHtml().first(8)=="@@@LINK=") {
             //继续搜索LINK后对应的单词
-            Word newWord(begin->html.mid(8));
+            Word newWord(begin->getHtml().mid(8));
             // 判断是否已经被搜索过了
-            if (!searchedWords.contains(newWord.word)) {
+            if (!searchedWords.contains(newWord.getWord())) {
                 // 搜索新的单词，并将其放到begin的后面
                 // 由于QVector本质上就是QList，所有随机插入开销不大
                 QVector<Word> newSearchWords;
@@ -67,7 +67,7 @@ bool ArticleMaker::searchWord(const QString &word)
 
                 begin = searchWords.begin();
                 end = searchWords.end();
-                searchedWords.insert(newWord.word);
+                searchedWords.insert(newWord.getWord());
             } else {
                 // 如果已经被搜索过了，那就跳过
                 searchWords.erase(begin);
@@ -77,7 +77,7 @@ bool ArticleMaker::searchWord(const QString &word)
 
         } else {
             // 这是一个完成的单词html
-            body += (begin->html + "\n");
+            body += (begin->getHtml() + "\n");
             //searchWords.erase(begin++);
             searchWords.erase(begin);
             begin=searchWords.begin();
@@ -90,7 +90,7 @@ bool ArticleMaker::searchWord(const QString &word)
 <html>
 <title>animal</title>
 <head>
-    <script src="qrc://../res/audioPlay.js" charset="utf-8" type="text/javascript" language="javascript"></script>
+    <script src="qrc:/rsc/audioPlayer.js" charset="utf-8" type="text/javascript" language="javascript"></script>
 </head>
 <audio id="audioPlayer" controls style="display: none;">
     Your browser does not support the audio element.

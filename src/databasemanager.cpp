@@ -29,9 +29,9 @@ bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) 
 {
     // 执行查询
     QSqlQuery query;
-    if(!searchWord.word.isEmpty()) {
+    if(!searchWord.getWord().isEmpty()) {
         QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
-        sqlQuery = sqlQuery.arg("\"" + searchWord.word + "\"");
+        sqlQuery = sqlQuery.arg("\"" + searchWord.getWord() + "\"");
         query.prepare(sqlQuery);
         qDebug() << sqlQuery;
     }
@@ -41,11 +41,11 @@ bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) 
     }
 
     Word tem;
-    tem.word = searchWord.word;
+    tem.setWord(searchWord.getWord());
     // 处理查询结果
     while (query.next()) {
         // 获取查询结果中的字段值
-        tem.html = query.value(0).toString().trimmed();
+        tem.setHtml(query.value(0).toString().trimmed());
         Words.push_back(tem);
     }
     return true;
@@ -82,9 +82,9 @@ bool DatabaseManager::insertWord(Word &word)
     {
         QSqlQuery queryAdd;
         queryAdd.prepare("INSERT INTO dictionaryTable(word,html) VALUES (:word,:html)");
-        queryAdd.bindValue(":word", word.word);
-        qDebug() << word.word;
-        queryAdd.bindValue(":html", word.html);
+        queryAdd.bindValue(":word", word.getWord());
+        qDebug() << word.getWord();
+        queryAdd.bindValue(":html", word.getHtml());
         if(queryAdd.exec()) {
             success = true;
         }

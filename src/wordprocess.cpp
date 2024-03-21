@@ -12,10 +12,10 @@ WordProcess::WordProcess(const QString& path)
         QString line;
         while(!in.atEnd()){
             line = in.readLine();
-            tem.word = line.trimmed();
+            tem.setWord(line.trimmed());
             // html
             line = in.readLine();
-            tem.html = line.trimmed();
+            tem.setHtml(line.trimmed());
             // </> 舍弃
             line = in.readLine();
             words.push_back(tem);
