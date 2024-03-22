@@ -6,6 +6,7 @@
 // 当页面加载完成之后，指向audioLinkInit()
 window.addEventListener("load", audioLinkInit);
 
+
 function playAudio(event) {
     // 阻止默认行为，即点击链接时不跳转到链接的 URL
     event.preventDefault();
@@ -24,7 +25,6 @@ function playAudio(event) {
     }
 }
 // 为所有音频 <a> 标签加上 onclick事件
-
 function audioLinkInit() {
     console.log("begin");
     // 找到所有a标签
@@ -38,5 +38,25 @@ function audioLinkInit() {
     }
 }
 
+// 中英切换开关
+function languageSwitch() {
+    // 获取按钮现在的文本
+    var buttonElements = document.getElementsByClassName("language-button");
+    var language = "Enlish";
+    var isDisplay = "none";
+    // 对按钮文本进行切换
+    if (buttonElements[0].innerHTML.match(language)) {
+        language = "Chinese"
+        buttonElements[0].innerHTML = language;
+        isDisplay = "inline";
+    } else {
+        buttonElements[0].innerHTML = "Enlish";
+    }
 
+    // 显示或者隐藏
+    var chineseElements = document.getElementsByTagName("chn");
+    for (var chineseElement of chineseElements) {
+        chineseElement.style.setProperty('display', isDisplay, 'important');
+    }
+}
 

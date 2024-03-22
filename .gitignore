@@ -48,7 +48,6 @@ out
 
 #webpage 
 *.html
-*.css
 
 #backup files
 *.cfg

@@ -34,7 +34,7 @@ bool DatabaseManager::isOpen() const
 bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) const
 {
     // 执行查询
-    QSqlQuery query;
+    QSqlQuery query(db);
     if(!searchWord.getWord().isEmpty()) {
         QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
         sqlQuery = sqlQuery.arg("\"" + searchWord.getWord() + "\"");
@@ -54,7 +54,7 @@ bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) 
         tem.setHtml(query.value(0).toString().trimmed());
         Words.push_back(tem);
     }
-    return true;
+    return !Words.isEmpty();
 }
 
 bool DatabaseManager::searchResorce(const QString &fileName, QByteArray &data) const
@@ -110,7 +110,7 @@ bool DatabaseManager::searchResorce(const QString &fileName, QByteArray &data) c
 bool DatabaseManager::createTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // id 每个单词的主键
     // word 单词
@@ -134,7 +134,7 @@ bool DatabaseManager::createTable()
 bool DatabaseManager::createSoundTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file mp3 文件名
     // data BLOB
@@ -156,7 +156,7 @@ bool DatabaseManager::createSoundTable()
 bool DatabaseManager::createImageTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file png 文件名
     // data BLOB
@@ -178,7 +178,7 @@ bool DatabaseManager::createImageTable()
 bool DatabaseManager::createCSSTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file 文件名
     // data BLOB
@@ -200,7 +200,7 @@ bool DatabaseManager::createCSSTable()
 bool DatabaseManager::createJSTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file 文件名
     // data BLOB
@@ -222,7 +222,7 @@ bool DatabaseManager::createJSTable()
 bool DatabaseManager::createFontTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file 文件名
     // data BLOB
@@ -244,7 +244,7 @@ bool DatabaseManager::createFontTable()
 bool DatabaseManager::createSVGTable()
 {
     bool success = true;
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 建立词典表
     // file 文件名
     // data BLOB
@@ -268,7 +268,7 @@ bool DatabaseManager::insertWord(Word &word)
     bool success = false;
     if (!word.isEmpty())
     {
-        QSqlQuery queryAdd;
+        QSqlQuery queryAdd(db);
         queryAdd.prepare("INSERT INTO dictionaryTable(word,html) VALUES (:word,:html)");
         queryAdd.bindValue(":word", word.getWord());
         qDebug() << word.getWord();
@@ -297,7 +297,7 @@ bool DatabaseManager::insertBLOB(const QString &tableName, const QString &filePa
     }
     if (!tableName.isEmpty() && !filePath.isEmpty())
     {
-        QSqlQuery queryAdd;
+        QSqlQuery queryAdd(db);
         queryAdd.prepare(QString("INSERT INTO %1(file,data) VALUES (:file,:data)").arg(tableName));
         queryAdd.bindValue(":file", blobFileInfo.fileName());
         queryAdd.bindValue(":data", blobData);
@@ -315,7 +315,7 @@ bool DatabaseManager::insertBLOB(const QString &tableName, const QString &filePa
 bool DatabaseManager::hasTable(const QString &tableName) const
 {
     QString createTable(QString("SELECT name FROM sqlite_master WHERE type='table' AND name='%1'").arg(tableName));
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(createTable);
     return !query.exec();
 }
@@ -323,7 +323,7 @@ bool DatabaseManager::hasTable(const QString &tableName) const
 bool DatabaseManager::getResource(const QString &tableName, const QString &resouceName, QByteArray &data) const
 {
     // 执行查询
-    QSqlQuery query;
+    QSqlQuery query(db);
     if(!tableName.isEmpty() && !resouceName.isEmpty()) {
         QString sqlQuery("SELECT data FROM %1 WHERE file=%2");
         sqlQuery = sqlQuery.arg(tableName, "\"" + resouceName + "\"");
@@ -473,4 +473,45 @@ bool DatabaseManager::initSVGDate(const QString &path)
     }
     // 暂时不做错误处理
     return true;
+}
+
+VocabularyDatabase::VocabularyDatabase(const QString &path)
+{
+    db = QSqlDatabase::addDatabase("QSQLITE", "secondary");
+    db.setDatabaseName(path);
+    if(db.open()) {
+        qDebug() << "Vocabulary database is open";
+    } else {
+        qDebug() << "Vocabulary database error!";
+        qDebug() << db.lastError().text();
+    }
+}
+
+Word VocabularyDatabase::searchWord(const QString &word) const
+{
+    // 执行查询
+    QSqlQuery query(db);
+    Word result;
+    result.setWord(word);
+    if(!word.isEmpty()) {
+
+        QString sqlQuery("SELECT CET4,CET6,NEEP,rank FROM vocabulary WHERE word=\"%1\"");
+        sqlQuery = sqlQuery.arg(word);
+        query.prepare(sqlQuery);
+        qDebug() << sqlQuery;
+    }
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to search word in vocabulary.";
+        qDebug() << query.lastError();
+    }
+
+    // 处理查询结果
+    if (query.next()) {
+        // 获取查询结果中的字段值
+        result.setCET4(query.value(0).toString()=="CET4");
+        result.setCET6(query.value(1).toString()=="CET4");
+        result.setNEEP(query.value(2).toString()=="NEEP");
+        result.setRank(query.value(3).toString());
+    }
+    return result;
 }

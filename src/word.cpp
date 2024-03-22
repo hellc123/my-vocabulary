@@ -4,7 +4,10 @@ Word::Word(const QString &w, const QString &h) :
     html(h),
     originalWord(w)
 {
-
+    score = 0;
+    CET4 = false;
+    CET6 = false;
+    NEEP = false;
 }
 
 void Word::setWordInformation(const QString &w, bool cet4, bool cet6, bool neep, unsigned int sc, const QString & rk)

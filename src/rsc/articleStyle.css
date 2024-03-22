@@ -1,0 +1,29 @@
+/* 圆角标签样式 */
+.rounded {
+    display: inline-block;
+    border-radius: 10px;
+    background-color: #FFF;
+    color: #93979E;
+    border: 1px solid #93979E;
+    padding: 5px 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* 圆角按钮样式 */
+.language-button {
+    cursor: pointer;
+}
+
+/* 按钮悬停样式 */
+.language-button:hover {
+    background-color: #D3D3D3;
+}
+
+/* 隐藏中文 */
+chn {
+    display: none !important;
+
+/*    visibility: hidden*/
+}

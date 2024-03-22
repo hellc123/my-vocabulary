@@ -12,8 +12,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent},
       dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
+      vocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\vocabulary.db)"),
       dictDatabase(dbAddress),
-      articleMaker(dictDatabase)
+      vocabularyDatabase(vocabularyAddress),
+      articleMaker(dictDatabase, vocabularyDatabase)
 {
     // 安装 scheme handler
     MySchemeHandler *handler = new MySchemeHandler(this, articleMaker);
@@ -57,17 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
 
 
-
+    // 词汇测试程序
+    // 遍历所有 vocaublary.xml 中的单词
     //VocabularyTest *test = new VocabularyTest();
     //test ->show();
-
-    // 加载音频
-    //    dictDatabase.initSoundData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\sound)");
-    //    dictDatabase.initImageData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\am)");
-    //    dictDatabase.initCSSData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\css)");
-    //    dictDatabase.initJSData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\js)");
-    //    dictDatabase.initFontData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\font)");
-    //    dictDatabase.initSVGDate(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\svg)");
 
     // 初始查询单词
     loadWord("welcome");
@@ -103,5 +98,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     event->accept();
     appQuit();
-
 }

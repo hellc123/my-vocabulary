@@ -2,15 +2,17 @@
 #include "word.h"
 #include <QVector>
 #include <QSet>
-ArticleMaker::ArticleMaker(const DatabaseManager &db):
-    _db(db)
+ArticleMaker::ArticleMaker(const DatabaseManager &db, const VocabularyDatabase& vdb):
+    _db(db),
+    _vdb(vdb)
 {
 
 }
 
-ArticleMaker::ArticleMaker(const QString &word, const DatabaseManager &db) :
+ArticleMaker::ArticleMaker(const QString &word, const DatabaseManager &db, const VocabularyDatabase& vdb) :
     _word(word),
-    _db(db)
+    _db(db),
+    _vdb(vdb)
 {
 }
 QString ArticleMaker::getHtml()
@@ -31,7 +33,17 @@ bool ArticleMaker::searchWord(const QString &word)
     Word searchWord(_word);
     QVector<Word> searchWords;
     // 在词典数据库里面搜索
-    _db.searchWord(searchWord,searchWords);
+    if (!_db.searchWord(searchWord,searchWords)) {
+        // 没有找到结果
+        QString NotFonudHtml = R"(<!DOCTYPE html><html><head></head><body><div class="gdnotfound"><p>No definition for <b>%1</b> was found in dictionary.</p></div></body></html>)";
+        _html = NotFonudHtml.arg(_word);
+        return false;
+    }
+
+
+
+    // 在四六级考研词库里面搜索
+    searchWord = _vdb.searchWord(_word);
 
     QString body;
     // 遍历所有html
@@ -45,8 +57,6 @@ bool ArticleMaker::searchWord(const QString &word)
 //        for (const auto & w :searchWords) {
 //            qDebug() << w.word;
 //        }
-
-
         if(begin->getHtml().first(8)=="@@@LINK=") {
             //继续搜索LINK后对应的单词
             Word newWord(begin->getHtml().mid(8));
@@ -84,20 +94,44 @@ bool ArticleMaker::searchWord(const QString &word)
             end = searchWords.end();
         }
     }
+
     // 加上头部
     QString head(R"(<!DOCTYPE html>
 <meta charset="utf-8">
 <html>
 <title>animal</title>
 <head>
-    <script src="qrc:/rsc/audioPlayer.js" charset="utf-8" type="text/javascript" language="javascript"></script>
+    <link rel="stylesheet" type="text/css" href="qrc:/rsc/articleStyle.css" />
+    <script src="qrc:/rsc/articleJS.js" charset="utf-8" type="text/javascript" language="javascript"></script>
 </head>
 <audio id="audioPlayer" controls style="display: none;">
     Your browser does not support the audio element.
 </audio>)");
+
+
+
+    // 显示四六级标签
+    QString tagHtml;
+    QString tagTemplate = R"(<div class="rounded">%1</div>)";
+    if(searchWord.IsCET4())
+        tagHtml += tagTemplate.arg("CET4") + " ";
+
+    if(searchWord.IsCET6())
+        tagHtml += tagTemplate.arg("CET6") + " ";
+
+    if(searchWord.IsNEEP())
+        tagHtml += tagTemplate.arg("NEEP") + " ";
+
+    if(!searchWord.getRank().isEmpty())
+        tagHtml += tagTemplate.arg(searchWord.getRank()) + " ";
+
+    // 显示语言切换按钮
+
+    QString languageButton = R"(<button class="rounded language-button" onclick=languageSwitch()>Enlish</button>)";
+
     // 加上尾部
     QString tailor(R"(</html>)");
-    _html = head + body + tailor;
+    _html = head + tagHtml + languageButton + body + tailor;
     return !_html.isEmpty();
 }
 

@@ -65,6 +65,7 @@ WordListModel::WordListModel(QObject *parent) :
 
 int WordListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return wordsList.size();
 }
 

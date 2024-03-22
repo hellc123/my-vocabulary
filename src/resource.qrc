@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>rsc/vocabulary.xml</file>
-        <file>rsc/audioPlayer.js</file>
-        <file>rsc/vocabulary.db</file>
+        <file>rsc/articleJS.js</file>
+        <file>rsc/myVocabulary.xml</file>
+        <file>rsc/articleStyle.css</file>
     </qresource>
 </RCC>

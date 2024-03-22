@@ -95,4 +95,24 @@ public:
 
 };
 
+
+// 四六级词库数据
+// 数据库结构
+/*
+CREATE TABLE vocabulary (
+    word TEXT PRIMARY KEY,
+    CET4 TEXT,
+    CET6 TEXT,
+    NEEP TEXT,
+    rank TEXT
+);
+*/
+class VocabularyDatabase {
+public:
+    VocabularyDatabase(const QString &path);
+    Word searchWord(const QString &word) const;
+private:
+    QSqlDatabase db;
+};
+
 #endif // DATABASEMANAGER_H

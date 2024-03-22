@@ -10,15 +10,19 @@
 class ArticleMaker
 {
 public:
-    ArticleMaker(const DatabaseManager& db);
-    ArticleMaker(const QString & word, const DatabaseManager& db);
+    ArticleMaker(const DatabaseManager& db, const VocabularyDatabase& vdb);
+    ArticleMaker(const QString & word, const DatabaseManager& db, const VocabularyDatabase& vdb);
     bool searchWord(const QString & word);
     bool searchResorce(const QString & fileName, QByteArray & data);
     QString getHtml();
     QString getWord();
 private:
     QString _word;
+
+    // 词典库
     const DatabaseManager& _db;
+    // 四六级考研词库
+    const VocabularyDatabase& _vdb;
     QString _html;
 };
 
