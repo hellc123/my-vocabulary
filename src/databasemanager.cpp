@@ -31,13 +31,13 @@ bool DatabaseManager::isOpen() const
     return db.isOpen();
 }
 
-bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) const
+bool DatabaseManager::searchWord(const Word & searchedWord,QVector<Word> & Words) const
 {
     // 执行查询
     QSqlQuery query(db);
-    if(!searchWord.getWord().isEmpty()) {
+    if(!searchedWord.getWord().isEmpty()) {
         QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
-        sqlQuery = sqlQuery.arg("\"" + searchWord.getWord() + "\"");
+        sqlQuery = sqlQuery.arg("\"" + searchedWord.getWord() + "\"");
         query.prepare(sqlQuery);
         qDebug() << sqlQuery;
     }
@@ -47,13 +47,26 @@ bool DatabaseManager::searchWord(const Word & searchWord,QVector<Word> & Words) 
     }
 
     Word tem;
-    tem.setWord(searchWord.getWord());
+    tem.setWord(searchedWord.getWord());
     // 处理查询结果
     while (query.next()) {
         // 获取查询结果中的字段值
         tem.setHtml(query.value(0).toString().trimmed());
         Words.push_back(tem);
     }
+
+
+    // 如果没有找到这个单词
+    if(Words.isEmpty()) {
+        // 判断单词首字母是不是大写的
+        Word searchAgainWord;
+        searchAgainWord.setWord(tem.getWord());
+        if (searchAgainWord.getWord().at(0).isUpper()) {
+            searchAgainWord.setWord(tem.getWord().toLower());
+            return searchWord(searchAgainWord, Words);
+        }
+    }
+
     return !Words.isEmpty();
 }
 
