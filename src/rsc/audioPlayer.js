@@ -12,7 +12,7 @@ function playAudio(event) {
     // 查找audioPlayer
     var audioPlayer = document.getElementById('audioPlayer');
     // 判断audio是否存在
-    if (audioPlayer != undefined) {
+    if (audioPlayer !== undefined) {
         // 获取音频地址
         var audioSource = event.currentTarget.getAttribute('href');
         console.log(audioSource);

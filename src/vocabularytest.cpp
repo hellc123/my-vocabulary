@@ -215,13 +215,43 @@ void VocabularyTest::beginWrite()
     if(recordsFile.exists()) {
         int returnCode = QMessageBox::information(this, "File existed!", "The file "+vocabularyRecord+" is existed, do you want to delete it?", QMessageBox::Yes, QMessageBox::No);
         if(returnCode == QMessageBox::No) {
-            qDebug() << "Now quit!";
-            close();
-            setDisabled(true);
+            // 判断文件是否完整
+            // 如果是完整文件，就disable
+            // 不是完整文件，就从最后一个单词继续
+            if(recordsFile.open(QFile::ReadOnly | QFile::Text)) {
+                QString fileText = recordsFile.readAll();
+                if(fileText.lastIndexOf("</lexicon>") != -1) {
+                    // 是完整文件，disable
+                    setDisabled(true);
+                    return;
+                }
+                qsizetype i = fileText.lastIndexOf("<name>");
+                if(i == -1) {
+                    // 是完整文件，disable
+                    setDisabled(true);
+                    return;
+                } else {
+                    // 找到最后写入的单词，开始下一个单词的测试
+                    qsizetype j = fileText.lastIndexOf("</name>");
+                    QString currentWord = fileText.mid(i+6,j-i-6);
+                    for (; wordIndex < wordList.count(); wordIndex++) {
+                        if(wordList[wordIndex].getWord()==currentWord) {
+                            wordIndex++;
+                            showWord(wordIndex);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                qDebug() << "Can not open file:" << vocabularyRecord;
+                setDisabled(true);
+            }
+            return;
         }
     }
     if(!recordsFile.open(QFile::WriteOnly | QFile::Text)) {
         qDebug() << "Can not open file:" << vocabularyRecord;
+        setDisabled(true);
     } else {
         recordsFile.write("<lexicon>");
         recordsFile.close();

@@ -100,3 +100,8 @@ bool ArticleMaker::searchWord(const QString &word)
     _html = head + body + tailor;
     return !_html.isEmpty();
 }
+
+bool ArticleMaker::searchResorce(const QString &fileName, QByteArray &data)
+{
+    return _db.searchResorce(fileName, data);
+}

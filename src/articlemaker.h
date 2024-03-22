@@ -13,6 +13,7 @@ public:
     ArticleMaker(const DatabaseManager& db);
     ArticleMaker(const QString & word, const DatabaseManager& db);
     bool searchWord(const QString & word);
+    bool searchResorce(const QString & fileName, QByteArray & data);
     QString getHtml();
     QString getWord();
 private:

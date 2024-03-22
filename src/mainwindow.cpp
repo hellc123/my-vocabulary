@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     centralAreaLayout->addWidget(translateArea, 10);
     // 按下Enter键和Return键之后，进行搜索
     connect(translateLine, &QLineEdit::returnPressed, this,
-               [=](){view->load(QUrl(QString(R"(entry://)")+translateLine->text().trimmed()));});
+               [=](){loadWord(translateLine->text().trimmed());});
 
     // 点击 word list 里的单词，查询这个单词
     connect(articlePad, &ArticlePad::articlePadSearchWord, this, &MainWindow::loadWord);
@@ -56,12 +56,21 @@ MainWindow::MainWindow(QWidget *parent)
     inspector = new QWebEngineView();
     connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
 
+
+
+    //VocabularyTest *test = new VocabularyTest();
+    //test ->show();
+
+    // 加载音频
+    //    dictDatabase.initSoundData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\sound)");
+    //    dictDatabase.initImageData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\am)");
+    //    dictDatabase.initCSSData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\css)");
+    //    dictDatabase.initJSData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\js)");
+    //    dictDatabase.initFontData(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\font)");
+    //    dictDatabase.initSVGDate(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\svg)");
+
     // 初始查询单词
     loadWord("welcome");
-
-    VocabularyTest *test = new VocabularyTest();
-    test ->show();
-
     resize(1000,600);
 }
 
@@ -78,7 +87,7 @@ void MainWindow::showInpector(bool)
 
 void MainWindow::loadWord(const QString &word)
 {
-    view->load(QUrl(QString(R"(entry://)")+word.trimmed()));
+    view->load(QUrl(QString(R"(entry://mydictionary/)")+word.trimmed()));
     translateLine->setText(word.trimmed());
 }
 
