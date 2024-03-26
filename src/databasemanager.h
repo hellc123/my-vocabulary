@@ -51,9 +51,11 @@ public:
     ~DatabaseManager();
     bool isOpen() const;
     // 搜索 searchWord 将结果保存在Words中
-    bool searchWord(const Word & searchWord,QVector<Word> & Words) const;
+    bool searchWord(const Word & searchedWord,QVector<Word> & Words) const;
     // 搜索 fileName的资源，然后保存在data里面
     bool searchResorce(const QString & fileName, QByteArray & data) const;
+    // 通过词典，判断一个词的原型
+    Word findOriginalWord(const Word & searchedWord) const;
 private:
     QSqlDatabase db;
     // 创建词典 html 数据库
@@ -110,7 +112,7 @@ CREATE TABLE vocabulary (
 class VocabularyDatabase {
 public:
     VocabularyDatabase(const QString &path);
-    Word searchWord(const QString &word) const;
+    Word searchWord(const Word &word) const;
 private:
     QSqlDatabase db;
 };

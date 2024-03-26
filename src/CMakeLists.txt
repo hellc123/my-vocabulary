@@ -18,6 +18,7 @@ set(PROJECT_SOURCES
         articlemaker.h articlemaker.cpp
         articlepad.h articlepad.cpp
         vocabularytest.h vocabularytest.cpp
+        learningmodel.h learningmodel.cpp
         resource.qrc
 )
 

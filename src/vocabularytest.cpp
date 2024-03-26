@@ -76,7 +76,8 @@ void VocabularyTest::wheelEvent(QWheelEvent *event)
 void VocabularyTest::familiarButtonPushed(bool)
 {
     qDebug() << "familiar";
-    wordList[wordIndex].addScore(50);
+    wordList.addWordScore(wordIndex,50);
+    //wordList[wordIndex].addScore(50);
     //qDebug() << wordList[wordIndex].toXMLString();
     wordWrite();
     nextWord();
@@ -85,7 +86,8 @@ void VocabularyTest::familiarButtonPushed(bool)
 void VocabularyTest::vagueButtonPushed(bool)
 {
     qDebug() << "vague";
-    wordList[wordIndex].addScore(10);
+    wordList.addWordScore(wordIndex,10);
+//    wordList[wordIndex].addScore(10);
     //qDebug() << wordList[wordIndex].toXMLString();
     wordWrite();
     nextWord();
@@ -94,7 +96,8 @@ void VocabularyTest::vagueButtonPushed(bool)
 void VocabularyTest::unknowButtonPushed(bool)
 {
     qDebug() << "unknow";
-    wordList[wordIndex].addScore(0);
+    wordList.addWordScore(wordIndex,0);
+    //wordList[wordIndex].addScore(0);
     //qDebug() << wordList[wordIndex].toXMLString();
     wordWrite();
     nextWord();
@@ -180,7 +183,7 @@ void VocabularyTest::loadWords()
         newWord.setNEEP(wordNode.at(3).toElement().text()=="NEEP");
         // rank
         newWord.setRank(wordNode.at(4).toElement().text());
-        wordList.push_back(newWord);
+        wordList.insert(newWord);
     }
 }
 

@@ -30,7 +30,7 @@ void Word::addScore(unsigned int sc)
     score += sc;
 }
 
-bool Word::isEmpty()
+bool Word::isEmpty() const
 {
     // 只要word和html中的一个没有，就返回空
     return word.isEmpty() || html.isEmpty();
@@ -146,7 +146,7 @@ QString Word::toXMLString() const
                 .arg(record.second);
     }
     xmlString += "</records></word>";
-    qDebug() << xmlString;
+    //qDebug() << xmlString;
     return xmlString;
 }
 
@@ -165,14 +165,49 @@ void Word::formXMLString(const QString &xmlData)
             //<addScore time="yyyy/MM/dd-HH/mm/ss">10</addScore>
         //</records>
     //</word>
-    QDomNodeList nameElement = xml.elementsByTagName("name");
-    QDomNodeList originalElement = xml.elementsByTagName("name");
-    QDomNodeList scoreElement = xml.elementsByTagName("name");
-    QDomNodeList CET4Element = xml.elementsByTagName("name");
-    QDomNodeList CET6Element = xml.elementsByTagName("name");
-    QDomNodeList NEEPElement = xml.elementsByTagName("name");
-    QDomNodeList rankElement = xml.elementsByTagName("name");
-    QDomNodeList recordsElement = xml.elementsByTagName("name");
+    // 根element 是word
+    formQDomElement(xml.toElement());
+
+}
+
+void Word::formQDomElement(const QDomElement &node)
+{
+    // 这个 node 是<word>
+    QDomNodeList elements = node.childNodes();
+    if(elements.count() != 8) {
+        qDebug() << "XML error !";
+        return;
+    }
+    // name
+    word = elements.at(0).toElement().text();
+    originalWord = elements.at(1).toElement().text();
+    score = elements.at(2).toElement().text().toUInt();
+    CET4 = elements.at(3).toElement().text() == "CET4";
+    CET6 = elements.at(4).toElement().text() == "CET6";
+    NEEP = elements.at(5).toElement().text() == "NEEP";
+    rank = elements.at(6).toElement().text();
+    QDomNodeList recordsNodes = elements.at(7).childNodes();
+    for (int i = 0; i < recordsNodes.count(); i++) {
+        //<addScore time="2024/03/21-21/16/31">50</addScore>
+        QString dateAndTime;
+        dateAndTime = recordsNodes.at(i).toElement().attribute("time");
+        //qDebug() << dateAndTime;
+        QDateTime recordTime;
+        recordTime = QDateTime::fromString(dateAndTime,"yyyy/MM/dd-HH/mm/ss");
+        unsigned int recordScore =recordsNodes.at(i).toElement().text().toUInt();
+        records.push_back(QPair<QDateTime, unsigned int>(recordTime, recordScore));
+    }
+    //toXMLString();
+}
+
+bool Word::less(const Word &left, const Word &right)
+{
+    return left.getWord() < right.getWord();
+}
+
+bool Word::greater(const Word &left, const Word &right)
+{
+    return left.getWord() > right.getWord();
 }
 
 
@@ -195,9 +230,89 @@ QString WordList::toXMLString() const
     //</lexicon>
     QString xmlString;
     xmlString +="<lexicon>";
-    for (const Word& word : *this) {
+    for (const auto& word : words) {
         xmlString += word.toXMLString();
     }
     xmlString +="</lexicon>";
     return xmlString;
 }
+
+void WordList::fromXMLString(const QString &xmlString)
+{
+    QDomDocument xml;
+    xml.setContent(xmlString);
+    //<lexicon> element 里面有很多word
+    auto wordDomList= xml.elementsByTagName("word");
+    qDebug() << wordDomList.count();
+    for (int i = 0; i < wordDomList.count(); i++) {
+        Word newWord;
+        newWord.formQDomElement(wordDomList.at(i).toElement());
+        insert(newWord);
+    }
+}
+
+void WordList::addWordScore(qsizetype index, unsigned int score)
+{
+    if (index >= words.count()) {
+        qDebug() << "index out of range!";
+        return;
+    }
+    words[words.keys()[index]].addScore(score);
+    totalScore+=score;
+}
+
+void WordList::addWordScore(const Word &word, unsigned int score)
+{   qDebug() << words.count();
+    // 单词存在的时候，加分
+    if(words.contains(word.getWord())){
+        words[word.getWord()].addScore(score);
+        totalScore+=score;
+    } else {
+        // 不存在这个单词
+        // 添加这个单词并加分
+        words.insert(word.getWord(), word);
+        words[word.getWord()].addScore(score);
+        wordNumber++;
+        totalScore+=word.getScore();
+    }
+    qDebug() << words.count();
+    qDebug() << "Word:" << word.getWord() << " adds " << score << ". Its current score is " << words[word.getWord()].getScore();
+}
+
+void WordList::insert(const Word &word)
+{
+    // 不存在才添加
+    if(!words.contains(word.getWord())){
+        words.insert(word.getWord(), word);
+        // 更新统计数据
+        wordNumber++;
+        totalScore += word.getScore();
+    }
+}
+
+double WordList::getAverageScore()
+{
+    averageScore = double(totalScore) / wordNumber;
+    return averageScore;
+}
+
+double WordList::getAverageScore() const
+{
+    return double(totalScore) / wordNumber;
+}
+
+const Word WordList::operator[](qsizetype index) const
+{
+    return words.values()[index];
+}
+
+const Word WordList::getWord(const QString &word) const
+{
+    return words[word];
+}
+
+const Word WordList::getWord(const Word &word) const
+{
+    return words[word.getWord()];
+}
+

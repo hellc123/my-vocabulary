@@ -5,6 +5,13 @@
 #include <QString>
 #include <QPair>
 #include <QDomDocument>
+#include <algorithm>
+#include <QHash>
+#include <QMap>
+
+// Word 是一个可以被hash的量
+// 通过 word 判断是否是同一个量
+
 class Word
 {
 public:
@@ -16,9 +23,7 @@ public:
                  bool neep, unsigned int sc, const QString & rk);
 
     //只要word和html中的一个没有，就返回空
-    bool isEmpty();
-
-
+    bool isEmpty() const;
     void setOriginalWord(const QString& w);
     QString getOriginalWord() const;
     unsigned int getScore() const;
@@ -42,7 +47,25 @@ public:
     QString toXMLString() const;
     // 从xml中读取单词信息
     void formXMLString(const QString& xmlDate);
+    // 从 QDomElement 获得单词信息
+    void formQDomElement(const QDomElement &node);
 
+    // 比较函数
+    static bool less(const Word& left, const Word& right);
+    static bool greater(const Word& left, const Word& right);
+    bool operator==(const Word &other) const {
+        return word == other.word;
+    }
+    bool operator<(const Word& other) const {
+        return word < other.word;
+    }
+    bool operator>(const Word& other) const {
+        return word > other.word;
+    }
+    // Hash 函数，用于散列 Student 对象
+    inline uint qHash(const Word &key, uint seed = 0) {
+        return qHash(key.word,seed);
+    }
 private:
     QString word;
     QString html;
@@ -63,13 +86,49 @@ private:
 };
 
 //using WordList = QList<Word>;
+
 // 一个存有单词和单词学习记录的列表
-class WordList : public QList<Word> {
+// 单词存在 QMap<QString,Word> 里面
+class WordList{
 public:
     // 转换为XML格式字符串
     QString toXMLString() const;
     // 从XML文件中读取
     void fromXMLString(const QString & xmlString);
+
+private:
+    // 总单词数量
+    unsigned int wordNumber;
+    // 所有单词的总分
+    unsigned int totalScore;
+    // 所有单词的平均分
+    double averageScore;
+public:
+    // 重载QList 的操作
+    void addWordScore(qsizetype index, unsigned int score);
+    // 寻找单词word，如果存在则为这个单词加分score，不存在则先添加这个单词word，然后再加分
+    void addWordScore(const Word& word, unsigned int score);
+
+    // 重写push_back 使之能够统计单词数量和总分
+    //void push_back(const Word& word);
+    void insert(const Word& word);
+    qsizetype size() const noexcept { return wordNumber; }
+    qsizetype count() const noexcept { return size(); }
+    qsizetype length() const noexcept { return size(); }
+
+    double getAverageScore();
+    double getAverageScore() const;
+
+    // 应该定义为const，因为会导致直接就不能修改protexted成员，导致总分无法统计
+    const Word operator[](qsizetype index) const;
+
+    // 获得Word
+    const Word getWord(const QString &word) const;
+    const Word getWord(const Word &word) const;
+
+private:
+    // 保存words
+    QMap<QString, Word> words;
 };
 
 #endif // WORD_H

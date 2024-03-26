@@ -19,9 +19,10 @@ int main(int argc, char* argv[])
         // 注册scheme
         QWebEngineUrlScheme::registerScheme(scheme);
     }
-
     QApplication app(argc, argv);
-
+    QFont f = QApplication::font();
+    f.setStyleStrategy( QFont::PreferAntialias );
+    QApplication::setFont( f );
     MainWindow mainwindow;
     mainwindow.show();
 

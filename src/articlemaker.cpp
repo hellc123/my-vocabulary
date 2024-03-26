@@ -43,7 +43,7 @@ bool ArticleMaker::searchWord(const QString &word)
 
 
     // 在四六级考研词库里面搜索
-    searchWord = _vdb.searchWord(_word);
+    searchWord = _vdb.searchWord(Word(_word));
 
     QString body;
     // 遍历所有html

@@ -1,6 +1,5 @@
 #include "databasemanager.h"
-#include "wordProcess.h"
-
+#include <QFile>
 DatabaseManager::DatabaseManager(const QString &path)
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -37,7 +36,7 @@ bool DatabaseManager::searchWord(const Word & searchedWord,QVector<Word> & Words
     QSqlQuery query(db);
     if(!searchedWord.getWord().isEmpty()) {
         QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
-        sqlQuery = sqlQuery.arg("\"" + searchedWord.getWord() + "\"");
+        sqlQuery = sqlQuery.arg("\'" + searchedWord.getWord() + "\'");
         query.prepare(sqlQuery);
         qDebug() << sqlQuery;
     }
@@ -54,16 +53,17 @@ bool DatabaseManager::searchWord(const Word & searchedWord,QVector<Word> & Words
         tem.setHtml(query.value(0).toString().trimmed());
         Words.push_back(tem);
     }
-
-
     // 如果没有找到这个单词
     if(Words.isEmpty()) {
         // 判断单词首字母是不是大写的
         Word searchAgainWord;
         searchAgainWord.setWord(tem.getWord());
-        if (searchAgainWord.getWord().at(0).isUpper()) {
-            searchAgainWord.setWord(tem.getWord().toLower());
-            return searchWord(searchAgainWord, Words);
+        // 判读有没有大写字母
+        for (const auto & i : searchAgainWord.getWord()) {
+            if (i.isUpper()) {
+                searchAgainWord.setWord(tem.getWord().toLower());
+                return searchWord(searchAgainWord, Words);
+            }
         }
     }
 
@@ -118,6 +118,59 @@ bool DatabaseManager::searchResorce(const QString &fileName, QByteArray &data) c
         getResource("svg", fileName, data);
     }
     return true;
+}
+
+Word DatabaseManager::findOriginalWord(const Word &searchedWord) const
+{
+    Word result;
+    // 搜索词库
+    // 执行查询
+    QSqlQuery query(db);
+    if(!searchedWord.getWord().isEmpty()) {
+        QString sqlQuery("SELECT html FROM dictionaryTable WHERE word=%1");
+        // 不能使用"" 双引号
+        // SELECT html FROM dictionaryTable WHERE word="word"
+        // 在sqlite 里面，"word" 代表属性名word
+        // 这句话等同于搜搜word属性相同的项目，相当于搜索所有项目
+        sqlQuery = sqlQuery.arg("\'" + searchedWord.getWord() + "\'");
+        query.prepare(sqlQuery);
+        qDebug() << sqlQuery;
+    }
+    if (!query.exec()) {
+        qDebug() << "Error: Failed to execute query.";
+        // 返回空词
+        return result;
+    }
+
+    result.setWord(searchedWord.getWord());
+    // 处理查询结果
+    // 只需要看一个结果就行 因为如果一个词有释义，会放在第一个
+    // 而且不会出现多重链接的情况
+    if (query.next()) {
+        // 获取查询结果中的字段值
+        QString htmlResult = query.value(0).toString().trimmed();
+        // 判断是否是链接
+        if(htmlResult.first(8)=="@@@LINK=") {
+            // 不是原型，但是原型找到了
+            result.setWord(htmlResult.mid(8).trimmed());
+            return result;
+        } else {
+            // 不是链接，说明是原型
+            return result;
+        }
+    } else {
+        // Drive 自然是没有找到的
+        // 没有找到单词
+        // 判读有没有大写字母
+        for (const auto & i : searchedWord.getWord()) {
+            if (i.isUpper()) {
+                result.setWord(searchedWord.getWord().toLower());
+                return findOriginalWord(result);
+            }
+        }
+    }
+    // 字典里面找不到的词不要
+    return Word();
 }
 
 bool DatabaseManager::createTable()
@@ -358,10 +411,26 @@ bool DatabaseManager::getResource(const QString &tableName, const QString &resou
 
 bool DatabaseManager::initDictionary(const QString &dictPath)
 {
-    //dictPath 是字典的大html位置
-    WordProcess parser(dictPath);
-    for(Word& w : parser.words) {
-        insertWord(w);
+    //dictPath 是字典 txt 位置
+    QFile dict(dictPath);
+    if(dict.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug()<< "open" + dictPath;
+        QTextStream in(&dict);
+        Word word;
+        QString line;
+        while(!in.atEnd()){
+            line = in.readLine();
+            word.setWord(line.trimmed());
+            // html
+            line = in.readLine();
+            word.setHtml(line.trimmed());
+            // </> 舍弃
+            line = in.readLine();
+            insertWord(word);
+        }
+    } else {
+        qDebug()<< "Can not open " + dictPath;
+        return false;
     }
     // 暂时不做错误处理
     return true;
@@ -500,16 +569,15 @@ VocabularyDatabase::VocabularyDatabase(const QString &path)
     }
 }
 
-Word VocabularyDatabase::searchWord(const QString &word) const
+Word VocabularyDatabase::searchWord(const Word &word) const
 {
     // 执行查询
     QSqlQuery query(db);
     Word result;
-    result.setWord(word);
-    if(!word.isEmpty()) {
-
+    result.setWord(word.getWord());
+    if(!word.getWord().isEmpty()) {
         QString sqlQuery("SELECT CET4,CET6,NEEP,rank FROM vocabulary WHERE word=\"%1\"");
-        sqlQuery = sqlQuery.arg(word);
+        sqlQuery = sqlQuery.arg(word.getWord());
         query.prepare(sqlQuery);
         qDebug() << sqlQuery;
     }
@@ -525,6 +593,15 @@ Word VocabularyDatabase::searchWord(const QString &word) const
         result.setCET6(query.value(1).toString()=="CET4");
         result.setNEEP(query.value(2).toString()=="NEEP");
         result.setRank(query.value(3).toString());
+    } else {
+        // 没有找到，如果存在大写字母，转为小写再查一遍
+        //qDebug() << "aaaaaaaaaaa" << word.getWord();
+        for (const auto &i : word.getWord()) {
+            if (i.isUpper()) {
+                result.setWord(word.getWord().toLower());
+                return searchWord(result);
+            }
+        }
     }
     return result;
 }

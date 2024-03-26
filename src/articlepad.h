@@ -1,6 +1,7 @@
 #ifndef ARTICLEPAD_H
 #define ARTICLEPAD_H
 
+#include "databasemanager.h"
 #include <QObject>
 #include <QWidget>
 #include <QListView>
@@ -10,8 +11,13 @@
 #include <QTextEdit>
 #include <QCursor>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QRegularExpression>
 #include <QSet>
+#include "learningmodel.h"
+#include <QPushButton>
+#include "wordprocess.h"
+#include <QMessageBox>
 // model
 // 1、一个纯文本写字栏
 // 2、对这个写字栏中的文本进行分词
@@ -53,22 +59,55 @@ class ArticlePad : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ArticlePad(QWidget *parent = nullptr);
+    explicit ArticlePad(const DatabaseManager &db,WordProcess & wp, LearningModel &lm, QWidget *parent = nullptr);
 private:
     // 横向布局
     QHBoxLayout * articlePadLayout;
     // 写字板
     QTextEdit *articleEdit;
+
+    // 单词显示和学习区域
+    QWidget *wordViewArea;
+    QVBoxLayout *wordViewAreaLayout;
     // 用来显示单词列表
     QListView *wordListView;
     // 用来存储单词数据
     WordListModel wordListModel;
 
+    // 学习区域
+    QPushButton *easyButton;
+    QPushButton *goodButton;
+    QPushButton *hardButton;
+    QPushButton *ignoreButton;
+
     // 分词
     bool tokenizer(QString article);
     void clickWord(const QModelIndex &index);
+    // 词典数据库
+    const DatabaseManager &db;
+    // 语言处理类
+    WordProcess & wp;
+    // 学习模型
+    LearningModel &lm;
+    // 按钮是否 开启
+    bool isEnableButton;
+public:
 signals:
     void articlePadSearchWord(QString word);
+
+private slots:
+    // 作用与当前 QListView 的 QModelIndex 对应word
+    void easy();
+    void good();
+    void hard();
+    void ignore();
+    // 关闭按钮
+    void disableButton();
+    // 开启按钮
+    void enableButton();
+private:
+    // 当按下学习按钮之后，要更新wordListView
+    void updateListView();
 
 };
 

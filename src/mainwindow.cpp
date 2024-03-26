@@ -13,9 +13,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent},
       dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
       vocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\vocabulary.db)"),
+      stopWordsAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\stopWords.txt)"),
+      userVocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\myVocabulary.xml)"),
       dictDatabase(dbAddress),
       vocabularyDatabase(vocabularyAddress),
-      articleMaker(dictDatabase, vocabularyDatabase)
+      articleMaker(dictDatabase, vocabularyDatabase),
+      wordProcess(dictDatabase, stopWordsAddress),
+      learningModel(userVocabularyAddress)
 {
     // 安装 scheme handler
     MySchemeHandler *handler = new MySchemeHandler(this, articleMaker);
@@ -34,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     centralAreaLayout->setSpacing(1);
 
     // 文本编辑器和单词列表部分
-    articlePad = new ArticlePad();
+    articlePad = new ArticlePad(dictDatabase, wordProcess,learningModel, this);
     centralAreaLayout->addWidget(articlePad, 9);
 
     // 查词和显示释义部分
@@ -64,8 +68,10 @@ MainWindow::MainWindow(QWidget *parent)
     //VocabularyTest *test = new VocabularyTest();
     //test ->show();
 
+    //qDebug() << dictDatabase.findOriginalWord(Word("doers")).toXMLString();
+
     // 初始查询单词
-    loadWord("welcome");
+    loadWord("word");
     resize(1000,600);
 }
 
