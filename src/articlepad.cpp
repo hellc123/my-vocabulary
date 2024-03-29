@@ -1,5 +1,6 @@
 #include "articlepad.h"
 #include "wordprocess.h"
+#include <QSizePolicy>
 ArticlePad::ArticlePad(const DatabaseManager &db, WordProcess & wp,LearningModel &lm, QWidget *parent)
     : QWidget{parent},
       db(db),
@@ -12,13 +13,16 @@ ArticlePad::ArticlePad(const DatabaseManager &db, WordProcess & wp,LearningModel
     setLayout(articlePadLayout);
 
     // 文章编辑框
-    articleEdit = new QTextEdit();
+    //articleEdit = new QTextEdit();
+    articleEdit = new QPlainTextEdit();
     articleEdit->setContentsMargins(0,0,0,0);
     articlePadLayout->addWidget(articleEdit, 9);
 
     // 单词显示与学习区域
     wordViewArea = new QWidget();
     wordViewArea->setContentsMargins(0,0,0,0);
+    wordViewArea->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+    wordViewArea->setMaximumWidth(150);
     wordViewAreaLayout = new QVBoxLayout(wordViewArea);
     wordViewAreaLayout->setContentsMargins(0,0,0,0);
     wordViewArea->setLayout(wordViewAreaLayout);
@@ -42,9 +46,9 @@ ArticlePad::ArticlePad(const DatabaseManager &db, WordProcess & wp,LearningModel
 
 
     // 当文字更新后，生成分词后的结果并显示
-    connect(articleEdit, &QTextEdit::textChanged, this, [=](){tokenizer(articleEdit->toPlainText());});
+    connect(articleEdit, &QPlainTextEdit::textChanged, this, [=](){tokenizer(articleEdit->toPlainText());});
     // 文字更新后，关闭按钮
-    connect(articleEdit, &QTextEdit::textChanged, this, &ArticlePad::disableButton);
+    connect(articleEdit, &QPlainTextEdit::textChanged, this, &ArticlePad::disableButton);
     // 点击单词后
     connect(wordListView, &QListView::clicked, this, &ArticlePad::clickWord);
     // index 移动也会更新 防止按住鼠标移动
@@ -173,25 +177,51 @@ void ArticlePad::enableButton()
 
 void ArticlePad::updateListView()
 {
+    // 为了提供学习反馈，当按下学习键之后，不管一个单词需不需要再次学习，都跳到下一个单词
     // 获取当前 QModelIndex
     const QModelIndex index = wordListView->currentIndex();
+    // 获得当前单词
+    const QString currentWord = wordListModel.data(index).toString();
+
     // 刷新 ListView
     tokenizer(articleEdit->toPlainText());
+
     // 判断index是否合法
     int count = wordListModel.rowCount();
+
     // 如果已经不存在单词了
     if(count == 0) {
         // 关闭按钮
         disableButton();
         return;
     }
+
+    // 学习前该单词是最后一个单词
+    // 如果该单词在学习之后不在学习list中，则 index.row() >= count
+    // 代表学习完成
     if(index.row() >= count) {
-        // row() 超过当前count
-        // 转到最后一行
-        wordListView->scrollTo(wordListModel.index(wordListModel.rowCount()-1));
-        wordListView->setCurrentIndex(wordListModel.index(wordListModel.rowCount()-1));
+        // 关闭按钮
+        disableButton();
         return;
+    }
+    // 当单词还是原来那个单词就跳到下一个单词
+    if(currentWord==wordListModel.data(index).toString()) {
+//        qDebug() <<"@@@@@@@@@@@@@";
+//        qDebug() << currentWord;
+//        qDebug() << wordListModel.data(index).toString();
+//        qDebug() <<"@@@@@@@@@@@@@";
+        const QModelIndex nextIndex = wordListModel.index(index.row()+1);
+        // 如果没有下一个单词
+        if (!nextIndex.isValid()) {
+            // 关闭按钮
+            disableButton();
+            return;
+        } else {
+            wordListView->scrollTo(nextIndex);
+            wordListView->setCurrentIndex(nextIndex);
+        }
     } else {
+        // 单词已经不在学习队列，那么当前index的单词就是下一个单词
         wordListView->scrollTo(index);
         wordListView->setCurrentIndex(index);
     }

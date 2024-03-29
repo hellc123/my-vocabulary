@@ -11,10 +11,14 @@
 #include <QOpenGLContext>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent},
-      dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
-      vocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\vocabulary.db)"),
-      stopWordsAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\stopWords.txt)"),
-      userVocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\myVocabulary.xml)"),
+//      dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
+//      vocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\vocabulary.db)"),
+//      stopWordsAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\stopWords.txt)"),
+//      userVocabularyAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\profile\myVocabulary.xml)"),
+      dbAddress(R"(.\dict\mdxDictionary.db)"),
+      vocabularyAddress(R"(.\dict\vocabulary.db)"),
+      stopWordsAddress(R"(.\profile\stopWords.txt)"),
+      userVocabularyAddress(R"(.\profile\myVocabulary.xml)"),
       dictDatabase(dbAddress),
       vocabularyDatabase(vocabularyAddress),
       articleMaker(dictDatabase, vocabularyDatabase),
@@ -39,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 文本编辑器和单词列表部分
     articlePad = new ArticlePad(dictDatabase, wordProcess,learningModel, this);
-    centralAreaLayout->addWidget(articlePad, 9);
+    centralAreaLayout->addWidget(articlePad, 12);
 
     // 查词和显示释义部分
     translateArea = new QWidget(this);

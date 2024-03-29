@@ -18,6 +18,7 @@
 #include <QPushButton>
 #include "wordprocess.h"
 #include <QMessageBox>
+#include <QPlainTextEdit>
 // model
 // 1、一个纯文本写字栏
 // 2、对这个写字栏中的文本进行分词
@@ -64,7 +65,8 @@ private:
     // 横向布局
     QHBoxLayout * articlePadLayout;
     // 写字板
-    QTextEdit *articleEdit;
+    QPlainTextEdit * articleEdit;
+    //QTextEdit *articleEdit;
 
     // 单词显示和学习区域
     QWidget *wordViewArea;

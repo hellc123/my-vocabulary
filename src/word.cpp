@@ -292,12 +292,14 @@ void WordList::insert(const Word &word)
 
 double WordList::getAverageScore()
 {
+    qDebug() << "Current average score is: " << double(totalScore) / wordNumber;
     averageScore = double(totalScore) / wordNumber;
     return averageScore;
 }
 
 double WordList::getAverageScore() const
 {
+    qDebug() << "Current average score is: " << double(totalScore) / wordNumber;
     return double(totalScore) / wordNumber;
 }
 
