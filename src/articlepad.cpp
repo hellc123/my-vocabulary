@@ -219,11 +219,13 @@ void ArticlePad::updateListView()
         } else {
             wordListView->scrollTo(nextIndex);
             wordListView->setCurrentIndex(nextIndex);
+            emit wordListView->entered(nextIndex);
         }
     } else {
         // 单词已经不在学习队列，那么当前index的单词就是下一个单词
         wordListView->scrollTo(index);
         wordListView->setCurrentIndex(index);
+        emit wordListView->entered(index);
     }
 }
 
