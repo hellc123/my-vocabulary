@@ -18,6 +18,7 @@ function playAudio(event) {
         var audioSource = event.currentTarget.getAttribute('href');
         console.log(audioSource);
         audioPlayer.src = audioSource;
+        audioPlayer.playbackRate=0.8;
         // 播放音频
         audioPlayer.play();
     } else {

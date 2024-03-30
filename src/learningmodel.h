@@ -29,13 +29,17 @@ public:
     void good(const QString &word);
     // 加5分
     void hard(const QString &word);
+    // 减10分
+    void unfamiliar(const QString &word);
 private:
     WordList words;
     const QString wordsFilePath;
     // 保存到path
     void save() const;
     // 给某个单词加分
-    void addScore(const QString &word, unsigned int score);
+    void addScore(const QString &word, int score);
+    // 都某个单词减分
+    void subtractScore(const QString &word, int score);
 };
 
 #endif // LEARNINGMODEL_H

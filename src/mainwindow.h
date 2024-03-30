@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "webview.h"
 #include "databasemanager.h"
 #include "articlemaker.h"
 #include <QLineEdit>
@@ -10,18 +9,15 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include "articlepad.h"
-#include "vocabularytest.h"
 #include "learningmodel.h"
 #include "wordprocess.h"
+#include "translatearea.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    // 网页检查器
-    QWebEngineView *inspector;
-
     // 中央widget
     QWidget *centralArea;
     // 中心的横向布局
@@ -29,16 +25,10 @@ public:
 
     // 文本编辑框和单词列表
     ArticlePad * articlePad;
-
-    // 一个 书写栏，和一个webview，
-    QWidget *translateArea;
-    WebView *view;
-    QLineEdit *translateLine;
-    QVBoxLayout * translateAreaLayout;
+    // 搜索栏和单词显示
+    TranslateArea *translateArea;
 
 
-    void showInpector(bool);
-    void loadWord(const QString & word);
 
 private:
     // 定义窗口退出时的动作
@@ -67,6 +57,8 @@ private:
     WordProcess wordProcess;
     // 学习模型，用于管理用户学习记录
     LearningModel learningModel;
+
+
 };
 
 #endif // MAINWINDOW_H

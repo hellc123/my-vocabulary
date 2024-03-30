@@ -19,8 +19,30 @@ set(PROJECT_SOURCES
         articlepad.h articlepad.cpp
         vocabularytest.h vocabularytest.cpp
         learningmodel.h learningmodel.cpp
+        translatearea.h translatearea.cpp
         resource.qrc
 )
+
+# 从 goldendict copy 过来的生成版本信息的方法
+block() # generate version.txt
+    string(TIMESTAMP build_time)
+    find_package(Git)
+    if (EXISTS "${CMAKE_SOURCE_DIR}/.git" AND GIT_FOUND)
+        execute_process(
+                COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_SOURCE_DIR}" rev-parse --short HEAD
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                OUTPUT_VARIABLE GIT_HASH)
+        file(WRITE "${CMAKE_SOURCE_DIR}/src/rsc/version.txt"
+            "VERSION: ${PROJECT_VERSION}.${GIT_HASH}\n"
+            "TIME: ${build_time}\n"
+            "COMPLIER: ${CMAKE_CXX_COMPILER_ID}\n"
+            "COMPLIER VERSION: ${CMAKE_CXX_COMPILER_VERSION}\n"
+            "BUILD TYPE: ${CMAKE_BUILD_TYPE}\n"
+        )
+    else () # not built in a git repo
+        file(WRITE "${CMAKE_SOURCE_DIR}/src/rsc/version.txt" "${PROJECT_VERSION} at ${build_time}")
+    endif ()
+endblock()
 
 
 qt_add_executable(${PROJECT_NAME}
@@ -56,3 +78,5 @@ else()
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra )
   #-Wpedantic -Werror)
 endif()
+
+

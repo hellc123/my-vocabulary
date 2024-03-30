@@ -1,5 +1,27 @@
 #include "word.h"
-Word::Word(const QString &w, const QString &h) :
+Word::Word()
+{
+    word = QString();
+    html = QString();
+    originalWord = QString();
+    score = 0;
+    CET4 = false;
+    CET6 = false;
+    NEEP = false;
+}
+
+Word::Word(const QString w)
+{
+    word = w;
+    html = QString();
+    originalWord = w;
+    score = 0;
+    CET4 = false;
+    CET6 = false;
+    NEEP = false;
+}
+
+Word::Word(const QString w, const QString h) :
     word(w),
     html(h),
     originalWord(w)
@@ -10,7 +32,7 @@ Word::Word(const QString &w, const QString &h) :
     NEEP = false;
 }
 
-void Word::setWordInformation(const QString &w, bool cet4, bool cet6, bool neep, unsigned int sc, const QString & rk)
+void Word::setWordInformation(const QString &w, bool cet4, bool cet6, bool neep, int sc, const QString & rk)
 {
     word = w;
     CET4 = cet4;
@@ -20,14 +42,24 @@ void Word::setWordInformation(const QString &w, bool cet4, bool cet6, bool neep,
     rank = rk;
 }
 
-void Word::addScore(unsigned int sc)
+void Word::addScore(int sc)
 {
     // 获取当前时间
     QDateTime newTime = QDateTime::currentDateTime();
-    QPair<QDateTime,unsigned int> record(newTime,sc);
+    QPair<QDateTime, int> record(newTime,sc);
     qDebug() << "Word:" << word << "Original:" << originalWord << "Record:" << newTime.toString() << sc;
     records.push_back(record);
     score += sc;
+}
+
+void Word::subtractScore(int sc)
+{
+    // 获取当前时间
+    QDateTime newTime = QDateTime::currentDateTime();
+    QPair<QDateTime, int> record(newTime,0-sc);
+    qDebug() << "Word:" << word << "Original:" << originalWord << "Record:" << newTime.toString() << sc;
+    records.push_back(record);
+    score -= sc;
 }
 
 bool Word::isEmpty() const
@@ -41,12 +73,12 @@ QString Word::getOriginalWord() const
     return originalWord;
 }
 
-unsigned int Word::getScore() const
+int Word::getScore() const
 {
     return score;
 }
 
-void Word::setScore(unsigned int newScore)
+void Word::setScore(int newScore)
 {
     score = newScore;
 }
@@ -181,7 +213,7 @@ void Word::formQDomElement(const QDomElement &node)
     // name
     word = elements.at(0).toElement().text();
     originalWord = elements.at(1).toElement().text();
-    score = elements.at(2).toElement().text().toUInt();
+    score = elements.at(2).toElement().text().toInt();
     CET4 = elements.at(3).toElement().text() == "CET4";
     CET6 = elements.at(4).toElement().text() == "CET6";
     NEEP = elements.at(5).toElement().text() == "NEEP";
@@ -194,8 +226,8 @@ void Word::formQDomElement(const QDomElement &node)
         //qDebug() << dateAndTime;
         QDateTime recordTime;
         recordTime = QDateTime::fromString(dateAndTime,"yyyy/MM/dd-HH/mm/ss");
-        unsigned int recordScore =recordsNodes.at(i).toElement().text().toUInt();
-        records.push_back(QPair<QDateTime, unsigned int>(recordTime, recordScore));
+        int recordScore =recordsNodes.at(i).toElement().text().toInt();
+        records.push_back(QPair<QDateTime, int>(recordTime, recordScore));
     }
     //toXMLString();
 }
@@ -251,7 +283,7 @@ void WordList::fromXMLString(const QString &xmlString)
     }
 }
 
-void WordList::addWordScore(qsizetype index, unsigned int score)
+void WordList::addWordScore(qsizetype index, int score)
 {
     if (index >= words.count()) {
         qDebug() << "index out of range!";
@@ -261,8 +293,9 @@ void WordList::addWordScore(qsizetype index, unsigned int score)
     totalScore+=score;
 }
 
-void WordList::addWordScore(const Word &word, unsigned int score)
-{   qDebug() << words.count();
+void WordList::addWordScore(const Word &word, int score)
+{
+    qDebug() << words.count();
     // 单词存在的时候，加分
     if(words.contains(word.getWord())){
         words[word.getWord()].addScore(score);
@@ -277,6 +310,21 @@ void WordList::addWordScore(const Word &word, unsigned int score)
     }
     qDebug() << words.count();
     qDebug() << "Word:" << word.getWord() << " adds " << score << ". Its current score is " << words[word.getWord()].getScore();
+}
+
+void WordList::subtractScore(const Word &word, int score)
+{
+    qDebug() << words.count();
+    // 单词存在的时候，加分
+    if(words.contains(word.getWord())){
+        words[word.getWord()].subtractScore(score);
+        totalScore-=score;
+    } else {
+        // 不存在这个单词则返回
+        return;
+    }
+    qDebug() << words.count();
+    qDebug() << "Word:" << word.getWord() << " substrats " << score << ". Its current score is " << words[word.getWord()].getScore();
 }
 
 void WordList::insert(const Word &word)
@@ -300,6 +348,9 @@ double WordList::getAverageScore()
 double WordList::getAverageScore() const
 {
     qDebug() << "Current average score is: " << double(totalScore) / wordNumber;
+    qDebug() << "Current total score is: " << totalScore;
+    qDebug() << "Current word number is: " << wordNumber;
+
     return double(totalScore) / wordNumber;
 }
 

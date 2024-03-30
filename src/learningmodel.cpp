@@ -47,6 +47,11 @@ void LearningModel::hard(const QString &word)
     addScore(word, 5);
 }
 
+void LearningModel::unfamiliar(const QString &word)
+{
+    subtractScore(word,10);
+}
+
 void LearningModel::save() const
 {
     // 使用QSaveFile
@@ -61,12 +66,23 @@ void LearningModel::save() const
     //
 }
 
-void LearningModel::addScore(const QString &word, unsigned int score)
+void LearningModel::addScore(const QString &word, int score)
 {
     if(word.isEmpty())
         return;
     // 加分
-    words.addWordScore(word,score);
+    Word temWord(word);
+    words.addWordScore(temWord,score);
     // 保存
+    save();
+}
+
+void LearningModel::subtractScore(const QString &word, int score)
+{
+    if(word.isEmpty())
+        return;
+    // 减分
+    Word temWord(word);
+    words.subtractScore(temWord,score);
     save();
 }

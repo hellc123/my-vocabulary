@@ -9,7 +9,9 @@ ArticlePad::ArticlePad(const DatabaseManager &db, WordProcess & wp,LearningModel
 {
     articlePadLayout = new QHBoxLayout();
 
-    articlePadLayout->setContentsMargins(5,10,0,10);
+    articlePadLayout->setContentsMargins(0,0,0,0);
+    articlePadLayout->setSpacing(5);
+    //articlePadLayout->setContentsMargins(5,10,0,10);
     setLayout(articlePadLayout);
 
     // 文章编辑框
@@ -141,7 +143,7 @@ void ArticlePad::hard()
 void ArticlePad::ignore()
 {
     // 用一个提示框询问是否要ignore
-    int ret = QMessageBox::question(this, tr("ignore word"), "Are you sure to ignore this word?",
+    int ret = QMessageBox::question(this, "ignore word", "Are you sure to ignore this word?",
                                    QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::No)
         return;

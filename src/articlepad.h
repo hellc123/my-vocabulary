@@ -107,7 +107,7 @@ private slots:
     void disableButton();
     // 开启按钮
     void enableButton();
-private:
+public:
     // 当按下学习按钮之后，要更新wordListView
     void updateListView();
 

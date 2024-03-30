@@ -3,5 +3,6 @@
         <file>rsc/articleJS.js</file>
         <file>rsc/myVocabulary.xml</file>
         <file>rsc/articleStyle.css</file>
+        <file>rsc/version.txt</file>
     </qresource>
 </RCC>

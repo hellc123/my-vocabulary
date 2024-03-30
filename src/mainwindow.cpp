@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "webview.h"
 #include <QString>
 #include <QFile>
 #include <QWidget>
@@ -7,8 +6,8 @@
 #include <QCloseEvent>
 #include "databasemanager.h"
 #include <QVector>
-#include "word.h"
 #include <QOpenGLContext>
+#include "translatearea.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent},
 //      dbAddress(R"(E:\BaiduNetdiskWorkspace\project\my-vocabulary\dict\mdxDictionary.db)"),
@@ -32,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("img", handler);
     QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("entry", handler);
 
+    // 取消边界
+    setContentsMargins(0,0,0,0);
+
     // 中央widget
     centralArea = new QWidget(this);
     centralArea->setContentsMargins(0,0,0,0);
@@ -39,33 +41,28 @@ MainWindow::MainWindow(QWidget *parent)
     centralAreaLayout = new QHBoxLayout();
     centralArea->setLayout(centralAreaLayout);
     centralAreaLayout->setContentsMargins(0,0,0,0);
-    centralAreaLayout->setSpacing(1);
+    centralAreaLayout->setSpacing(5);
+
+
+
+//    centralWidget()->layout()->setContentsMargins(0,0,0,0);
+//    this->layout()->setContentsMargins(0,0,0,0);
 
     // 文本编辑器和单词列表部分
     articlePad = new ArticlePad(dictDatabase, wordProcess,learningModel, this);
+    articlePad->setContentsMargins(0,0,0,0);
     centralAreaLayout->addWidget(articlePad, 12);
 
-    // 查词和显示释义部分
-    translateArea = new QWidget(this);
-    translateLine = new QLineEdit();
-    view = new WebView();
 
-    translateAreaLayout = new QVBoxLayout();
-    translateArea->setLayout(translateAreaLayout);
-    translateAreaLayout->addWidget(translateLine);
-    translateAreaLayout->addWidget(view);
-
+    // 搜索栏和单词释义显示
+    translateArea = new TranslateArea(learningModel, this);
     centralAreaLayout->addWidget(translateArea, 10);
-    // 按下Enter键和Return键之后，进行搜索
-    connect(translateLine, &QLineEdit::returnPressed, this,
-               [=](){loadWord(translateLine->text().trimmed());});
 
     // 点击 word list 里的单词，查询这个单词
-    connect(articlePad, &ArticlePad::articlePadSearchWord, this, &MainWindow::loadWord);
-    // 检测网页
-    inspector = new QWebEngineView();
-    connect(view->pageAction(QWebEnginePage::WebAction::ViewSource),&QAction::triggered,this,&MainWindow::showInpector);
+    connect(articlePad, &ArticlePad::articlePadSearchWord, translateArea, &TranslateArea::loadWord);
 
+    // 当按下unfamiliar按钮后，更新articlePad
+    connect(translateArea, &TranslateArea::unfamiliarClick, articlePad, &ArticlePad::updateListView);
 
     // 词汇测试程序
     // 遍历所有 vocaublary.xml 中的单词
@@ -75,33 +72,18 @@ MainWindow::MainWindow(QWidget *parent)
     //qDebug() << dictDatabase.findOriginalWord(Word("doers")).toXMLString();
 
     // 初始查询单词
-    loadWord("word");
+    translateArea->loadWord("welcome");
     resize(1000,600);
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete inspector;
-}
-
-void MainWindow::showInpector(bool)
-{
-    inspector->page()->setInspectedPage( view->page() );
-    inspector->show();
-}
-
-void MainWindow::loadWord(const QString &word)
-{
-    view->load(QUrl(QString(R"(entry://mydictionary/)")+word.trimmed()));
-    translateLine->setText(word.trimmed());
+    //delete inspector;
 }
 
 void MainWindow::appQuit()
 {
-    // 如果insepct打开了，就关闭它
-    if(inspector && inspector->isVisible()){
-        inspector->close();
-    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

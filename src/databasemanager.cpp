@@ -576,7 +576,7 @@ Word VocabularyDatabase::searchWord(const Word &word) const
     Word result;
     result.setWord(word.getWord());
     if(!word.getWord().isEmpty()) {
-        QString sqlQuery("SELECT CET4,CET6,NEEP,rank FROM vocabulary WHERE word=\"%1\"");
+        QString sqlQuery("SELECT CET4,CET6,NEEP,rank FROM vocabulary WHERE word=\'%1\'");
         sqlQuery = sqlQuery.arg(word.getWord());
         query.prepare(sqlQuery);
         qDebug() << sqlQuery;
