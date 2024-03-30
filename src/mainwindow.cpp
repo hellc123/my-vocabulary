@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(centralArea);
     centralAreaLayout = new QHBoxLayout();
     centralArea->setLayout(centralAreaLayout);
-    centralAreaLayout->setContentsMargins(0,0,0,0);
+    centralAreaLayout->setContentsMargins(5,5,0,5);
     centralAreaLayout->setSpacing(5);
 
 

@@ -16,7 +16,7 @@ function playAudio(event) {
     if (audioPlayer !== undefined) {
         // 获取音频地址
         var audioSource = event.currentTarget.getAttribute('href');
-        console.log(audioSource);
+        //console.log(audioSource);
         audioPlayer.src = audioSource;
         audioPlayer.playbackRate=0.8;
         // 播放音频
@@ -27,13 +27,13 @@ function playAudio(event) {
 }
 // 为所有音频 <a> 标签加上 onclick事件
 function audioLinkInit() {
-    console.log("begin");
+    //console.log("begin");
     // 找到所有a标签
     var audioElements = document.getElementsByTagName("a");
     // 为所有资源类型为 MP3 的文件加上onclick事件
     for (var audioElement of audioElements) {
         if (audioElement.href.match(".mp3")) {
-            console.log(audioElement.href);
+            //console.log(audioElement.href);
             audioElement.onclick = playAudio;
         }
     }
