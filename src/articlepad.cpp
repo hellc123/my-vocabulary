@@ -67,6 +67,22 @@ ArticlePad::ArticlePad(const DatabaseManager &db, WordProcess & wp,LearningModel
     disableButton();
 }
 
+void ArticlePad::loadAndSort(QSet<QString> &wordSet)
+{
+    //auto pointer = &ArticlePad::wordLessThan;
+    wordListModel.copyFormSet(wordSet);
+//    std::sort(wordListModel.begin(),wordListModel.end(),&ArticlePad::wordLessThan);
+    std::sort(wordListModel.begin(),wordListModel.end(),[=](const QString& s1,const QString &s2){return wordLessThan(s1,s2);});
+    return;
+}
+
+bool ArticlePad::wordLessThan(const QString &s1, const QString &s2)
+{
+    if (lm.getScore(s1) == lm.getScore(s2))
+        return s1 < s2;
+    return lm.getScore(s1) < lm.getScore(s2);
+}
+
 /// To-DO:
 /// 1. 一个输入 article 返回 QSet<QString> 的文字处理类 WordProcess
 /// 2. 一个输入 QSet<QString>, 返回值得学习的QSet<QString> 语言学习模型类 LearningModel
@@ -89,8 +105,14 @@ bool ArticlePad::tokenizer(QString article)
     lm.getLearningSet(uniqueWords);
     qDebug() << uniqueWords.count();
 
+
     // 显示结果
-    wordListModel.copyFormSet(uniqueWords);
+    // 让 wordsList 首先按分数升序排列，然后按字母顺序升序排列
+
+    loadAndSort(uniqueWords);
+
+    //wordListModel.copyFormSet(uniqueWords);
+
     return true;
 }
 
@@ -262,7 +284,7 @@ QVariant WordListModel::data(const QModelIndex &index, int role) const
 void WordListModel::copyFormSet(const QSet<QString> &wordSet)
 {
     wordsList = wordSet.values();
-    wordsList.sort();
+    //wordsList.sort();
     dataChanged();
 }
 
@@ -287,8 +309,20 @@ void WordListModel::clear()
     dataChanged();
 }
 
+QList<QString>::iterator WordListModel::begin()
+{
+    return wordsList.begin();
+}
+
+QList<QString>::iterator WordListModel::end()
+{
+    return wordsList.end();
+}
+
 void WordListModel::dataChanged()
 {
     beginResetModel();
     endResetModel();
 }
+
+

@@ -32,6 +32,11 @@ void LearningModel::getLearningSet(QSet<QString> &wordSet) const
     wordSet = newWordSet;
 }
 
+int LearningModel::getScore(const QString word) const
+{
+    return words.getWord(word).getScore();
+}
+
 void LearningModel::easy(const QString &word)
 {
     addScore(word, 20);

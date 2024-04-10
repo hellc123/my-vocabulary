@@ -21,7 +21,7 @@ public:
     // 根据wordSet中的单词（已经经过WordPress处理的原型单词）
     // 返回需要学习的单词，覆盖wordSet
     void getLearningSet(QSet<QString> &wordSet) const;
-
+    int getScore(const QString word) const;
     // 单词学习部分
     // 加20分
     void easy(const QString &word);

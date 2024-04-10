@@ -7,6 +7,7 @@
 #include <QListView>
 #include <QAbstractItemView>
 #include <QList>
+#include <QStringList>
 #include <QListView>
 #include <QTextEdit>
 #include <QCursor>
@@ -19,6 +20,7 @@
 #include "wordprocess.h"
 #include <QMessageBox>
 #include <QPlainTextEdit>
+#include <algorithm>
 // model
 // 1、一个纯文本写字栏
 // 2、对这个写字栏中的文本进行分词
@@ -43,6 +45,8 @@ public:
     WordListModel& push_word(const QString & word);
     void remove_word(unsigned int i);
     void clear();
+    QList<QString>::iterator begin();
+    QList<QString>::iterator end();
 private slots:
     // 使用这个方法来更新view的数据
     void dataChanged();
@@ -75,6 +79,9 @@ private:
     QListView *wordListView;
     // 用来存储单词数据
     WordListModel wordListModel;
+    // wordsList 从QSet<QString>读取数据，并按照单词得分和首字母排序
+    void loadAndSort(QSet<QString> &wordSet);
+    bool wordLessThan(const QString &s1, const QString &s2);
 
     // 学习区域
     QPushButton *easyButton;
