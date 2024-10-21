@@ -106,7 +106,7 @@ bool DatabaseManager::searchResorce(const QString &fileName, QByteArray &data) c
     }
     if(fileType=="mp3"){
         getResource("sound", fileName, data);
-    } else if(fileType=="png"){
+    } else if(fileType=="png" || fileType=="jpg"){
         getResource("image", fileName, data);
     } else if(fileType=="css"){
         getResource("css", fileName, data);

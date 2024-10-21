@@ -127,6 +127,18 @@ void MySchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
             job->reply(QByteArrayLiteral("image/png"), buffer);
             //delete file;
         }
+        if (fileType == "jpg"){
+            qDebug() << filename;
+            //QFile *file = new QFile(fileAddressPrefix+"am\\"+filename);
+            //file->open(QFile::ReadOnly);
+            //ba->append(file->readAll());
+            //file->close();
+            articleMaker.searchResorce(filename, *ba);
+            buffer->open(QBuffer::ReadOnly);
+            buffer->seek(0);
+            job->reply(QByteArrayLiteral("image/jpeg"), buffer);
+            //delete file;
+        }
         return;
     }
     if (url.scheme() == "sound"){
