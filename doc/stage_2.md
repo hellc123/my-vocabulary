@@ -1,8 +1,9 @@
 # Stage 2
 ## to-do lists
-- 词条搜索
-- 还希望能够对词典内容进行分析
-- 研究GoldenGict是如何显示html页面的
+- [x] 词条搜索 (通过SQLite 数据库索引实现速查)
+- [ ] 还希望能够对词典内容进行分析
+- [ ] 研究GoldenGict是如何显示html页面的
+
   - 找到一个 ArticleView 类
 - 研究GoldenGict是如何管理资源的
 - 找一个合适的文档编辑器
